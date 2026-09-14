@@ -1,0 +1,42 @@
+.modern-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 16px 24px;
+  color: #64748b;
+  font-size: 13.5px;
+  transition: all 0.3s ease;
+}
+
+.modern-footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modern-footer-content strong {
+  color: #334155;
+  font-weight: 600;
+}
+
+.modern-footer-links a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+
+.modern-footer-links a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .modern-footer-content {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}

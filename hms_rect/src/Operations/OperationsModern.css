@@ -1,0 +1,285 @@
+/* OperationsModern.css - Enterprise OTA Styling */
+
+body {
+  background-color: #f4f7f6;
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.ops-page {
+  padding: 24px;
+}
+
+.ops-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ops-head h3 {
+  color: #0A337A; /* Trustworthy OTA Blue */
+  letter-spacing: -0.5px;
+}
+
+.ops-panel {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  margin-bottom: 24px;
+  border: none;
+}
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.ops-kpi {
+  border: 1px solid #EAF0F6;
+  border-radius: 12px;
+  padding: 16px;
+  background: #F9FBFC;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.ops-kpi h6 {
+  margin: 0;
+  color: #5E6F86;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ops-kpi .v {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0F1D30;
+}
+
+.ops-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.ops-form-row label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #4A4A4A;
+  font-weight: 600;
+}
+
+.ops-form-row input,
+.ops-form-row select {
+  width: 100%;
+  border: 1px solid #D8E0E8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #112233;
+  font-weight: 500;
+  background: #F9FBFC;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.ops-form-row input:focus,
+.ops-form-row select:focus {
+  outline: none;
+  border-color: #0A337A;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(10, 51, 122, 0.1);
+}
+
+.ops-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ops-actions .btn {
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+
+.ops-actions .btn-primary {
+  background-color: #0052CC;
+  border-color: #0052CC;
+  color: #ffffff;
+}
+
+.ops-actions .btn-primary:hover {
+  background-color: #0A337A;
+  border-color: #0A337A;
+}
+
+.ops-actions .btn-default {
+  background-color: #ffffff;
+  border-color: #D8E0E8;
+  color: #0F1D30;
+}
+
+.ops-actions .btn-default:hover {
+  background-color: #F4F7F6;
+  border-color: #C0CDD9;
+}
+
+.ops-actions .btn-success {
+  background-color: #00875A;
+  border-color: #00875A;
+  color: #ffffff;
+}
+
+.ops-actions .btn-success:hover {
+  background-color: #006644;
+  border-color: #006644;
+}
+
+.ops-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #EAF0F6;
+  border-radius: 8px;
+}
+
+.ops-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+
+.ops-table thead tr {
+  background: #F4F7F6;
+}
+
+.ops-table th {
+  border-bottom: 2px solid #D8E0E8 !important;
+  color: #5E6F86;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px !important;
+}
+
+.ops-table td {
+  border-bottom: 1px solid #EAF0F6 !important;
+  color: #0F1D30;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 14px 16px !important;
+  vertical-align: middle;
+}
+
+.ops-table tbody tr:hover {
+  background-color: #F9FBFC;
+}
+
+.ops-warning {
+  background: #FFF0B3;
+  color: #172B4D;
+  border: 1px solid #FFE380;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.ops-tabbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.ops-tabbar .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 1px solid #D8E0E8;
+  background: #ffffff;
+  color: #5E6F86;
+  transition: all 0.2s;
+}
+
+.ops-tabbar .btn:hover {
+  background: #F4F7F6;
+}
+
+.ops-tabbar .btn.active {
+  background: #0052CC;
+  color: #fff;
+  border-color: #0052CC;
+}
+
+.ops-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.ops-pagination .btn {
+  border: 1px solid #D8E0E8;
+  background: #ffffff;
+  color: #0052CC;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.ops-pagination .btn:hover:not(:disabled) {
+  background: #F4F7F6;
+}
+
+.ops-pagination .btn-primary {
+  background: #0052CC;
+  color: #ffffff;
+  border-color: #0052CC;
+}
+
+.ops-pagination .btn:disabled {
+  color: #A5ADBA;
+  background: #F4F5F7;
+  border-color: #DFE1E6;
+}
+
+.ops-page-dots {
+  color: #5E6F86;
+  font-weight: 700;
+  padding: 0 6px;
+}
+
+/* Pricing specific styles kept but modernized */
+.ops-pricing-panel { border-color: #EAF0F6; }
+.ops-pricing-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.ops-pricing-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.ops-pill { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; border: 1px solid #D8E0E8; background: #F4F7F6; color: #0F1D30; font-size: 12px; font-weight: 700; }
+.ops-pricing-form-block { border: 1px solid #EAF0F6; border-radius: 12px; background: #F9FBFC; padding: 16px; }
+.ops-pricing-table-wrap { border: 1px solid #EAF0F6; border-radius: 12px; overflow: hidden; }
+.ops-pricing-table { margin-bottom: 0; }
+.ops-pricing-table thead th { background: #F4F7F6; color: #5E6F86; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ops-pricing-table tbody tr:nth-child(even) { background: #F9FBFC; }
+.ops-row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ops-row-actions .btn { min-width: 80px; font-weight: 600; border-radius: 6px; }
+
+/* Public URL Card */
+.ops-public-url-card { border: 1px solid #EAF0F6; border-radius: 12px; background: #ffffff; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.ops-public-url-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ops-public-url-status { display: inline-flex; align-items: center; justify-content: center; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.ops-public-url-status.is-live { background: #E3FCEF; color: #006644; }
+.ops-public-url-status.is-paused { background: #DFE1E6; color: #42526E; }
+.ops-public-url-preview { margin-top: 16px; padding: 16px; border-radius: 8px; border: 1px solid #EAF0F6; background: #F9FBFC; color: #0F1D30; font-size: 13px; font-weight: 600; word-break: break-all; }
+
+@media (max-width: 768px) {
+  .ops-head { flex-direction: column; align-items: flex-start; }
+  .ops-pricing-head { flex-direction: column; }
+}

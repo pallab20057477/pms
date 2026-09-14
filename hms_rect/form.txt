@@ -1,0 +1,808 @@
+Created At: 2026-09-14T08:43:12+05:30
+Completed At: 2026-09-14T08:43:13+05:30
+File Path: `file:///d:/GO/all/project1/hms_rect/src/RoomManagement/RoomForm.jsx`
+Total Lines: 913
+Total Bytes: 37601
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { useEffect, useMemo, useRef, useState } from "react";
+2: import { Link, useNavigate, useParams } from "react-router-dom";
+3: import { useSelector } from "react-redux";
+4: import toast from "react-hot-toast";
+5: import { deleteWithAuth, getWithAuth, patchWithAuth, postWithAuth } from "../api";
+6: import { resolveAssetUrl } from "../Functions/assetUrl";
+7: import { moveItem, ROOM_IMAGE_LIMIT, ROOM_TYPE_OPTIONS, sortRoomImages } from "./roomUi";
+8: import "./RoomFormModern.css";
+9: 
+10: const ACCEPTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+11: 
+12: const DEFAULT_AMENITIES = [
+13:   { id: "wifi", name: "WiFi" },
+14:   { id: "ac", name: "AC" },
+15:   { id: "tv", name: "TV" },
+16:   { id: "refrigerator", name: "Refrigerator" },
+17:   { id: "balcony", name: "Balcony" },
+18:   { id: "mini_bar", name: "Mini-bar" },
+19: ];
+20: 
+21: const emptyForm = {
+22:   room_number: "",
+23:   room_type: "",
+24:   base_price: "",
+25:   description: "",
+26:   amenities: [],
+27:   max_occupancy: 2,
+28:   bed_type: "",
+29:   room_size: "",
+30:   view_type: "",
+31: };
+32: 
+33: const sectionStyle = {
+34:   background: "#ffffff",
+35:   border: "1px solid #dbe4f0",
+36:   borderRadius: 18,
+37:   padding: 22,
+38:   marginBottom: 20,
+39:   boxShadow: "0 16px 30px rgba(15, 23, 42, 0.06)",
+40: };
+41: 
+42: const imageCardStyle = {
+43:   width: 150,
+44:   borderRadius: 16,
+45:   border: "1px solid #dbe4f0",
+46:   overflow: "hidden",
+47:   background: "#ffffff",
+48:   boxShadow: "0 10px 24px rgba(15, 23, 42, 0.08)",
+49: };
+50: 
+51: function toLocalImage(file) {
+52:   return {
+53:     localId: `new-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+54:     file,
+55:     previewUrl: URL.createObjectURL(file),
+56:   };
+57: }
+58: 
+59: function badgeStyle(active) {
+60:   return {
+61:     display: "inline-flex",
+62:     alignItems: "center",
+63:     justifyContent: "center",
+64:     minWidth: 34,
+65:     height: 34,
+66:     borderRadius: 999,
+67:     border: "1px solid rgba(255,255,255,0.7)",
+68:     background: active ? "#f59e0b" : "rgba(15, 23, 42, 0.65)",
+69:     color: "#ffffff",
+70:     fontWeight: 700,
+71:     cursor: "pointer",
+72:   };
+73: }
+74: 
+75: function getImageName(image, fallback) {
+76:   if (image.file?.name) return image.file.name;
+77:   if (image.url) {
+78:     const parts = image.url.split("/");
+79:     return parts[parts.length - 1];
+80:   }
+81:   return fallback;
+82: }
+83: 
+84: export default function RoomForm() {
+85:   const token = useSelector((state) => state.auth.accesstoken);
+86:   const navigate = useNavigate();
+87:   const { id } = useParams();
+88:   const fileInputRef = useRef(null);
+89:   const latestNewImagesRef = useRef([]);
+90: 
+91:   const [form, setForm] = useState(emptyForm);
+92:   const [existingImages, setExistingImages] = useState([]);
+93:   const [newImages, setNewImages] = useState([]);
+94:   const [removedExistingIds, setRemovedExistingIds] = useState([]);
+95:   const [primaryKey, setPrimaryKey] = useState(null);
+96:   const [amenitiesList, setAmenitiesList] = useState([]);
+97:   const [amenityQuery, setAmenityQuery] = useState("");
+98:   const [loading, setLoading] = useState(Boolean(id));
+99:   const [saving, setSaving] = useState(false);
+100:   const [dragItem, setDragItem] = useState(null);
+101:   const [dropZoneActive, setDropZoneActive] = useState(false);
+102: 
+103:   useEffect(() => {
+104:     latestNewImagesRef.current = newImages;
+105:   }, [newImages]);
+106: 
+107:   useEffect(() => {
+108:     return () => {
+109:       latestNewImagesRef.current.forEach((image) => {
+110:         try {
+111:           URL.revokeObjectURL(image.previewUrl);
+112:         } catch (_) {}
+113:       });
+114:     };
+115:   }, []);
+116: 
+117:   useEffect(() => {
+118:     let mounted = true;
+119: 
+120:     async function loadAmenities() {
+121:       try {
+122:         const response = await getWithAuth("/amenities", token);
+123:         const data = response.data?.data ? response.data.data : response.data;
+124:         if (mounted) {
+125:           setAmenitiesList(Array.isArray(data) ? data : []);
+126:         }
+127:       } catch (error) {
+128:         console.error("Failed to load amenities", error);
+129:         if (mounted) {
+130:           setAmenitiesList([]);
+131:         }
+132:       }
+133:     }
+134: 
+135:     if (token) {
+136:       loadAmenities();
+137:     }
+138: 
+139:     return () => {
+140:       mounted = false;
+141:     };
+142:   }, [token]);
+143: 
+144:   useEffect(() => {
+145:     let mounted = true;
+146: 
+147:     async function loadRoom() {
+148:       if (!id) {
+149:         setLoading(false);
+150:         return;
+151:       }
+152: 
+153:       setLoading(true);
+154:       try {
+155:         const response = await getWithAuth(`/rooms/${id}`, token);
+156:         const data = response.data?.data ? response.data.data : response.data;
+157:         const sortedImages = sortRoomImages(data?.images || []);
+158:         const initialPrimary = sortedImages.find((image) => image.is_primary || image.isPrimary);
+159: 
+160:         const rawType = data?.room_type || data?.room_type_details?.name || "";
+161:         const roomTypeName = typeof rawType === "object" ? (rawType?.name || "") : String(rawType);
+162: 
+163:         setForm({
+164:           room_number: data?.room_number || "",
+165:           room_type: roomTypeName,
+166:           base_price: data?.base_price ?? "",
+167:           description: data?.description || "",
+168:           amenities: Array.isArray(data?.amenities) ? data.amenities.map((item) => String(item.id)) : [],
+169:           max_occupancy: data?.max_occupancy || 2,
+170:           bed_type: data?.bed_type || "",
+171:           room_size: data?.room_size || "",
+172:           view_type: data?.view_type || "",
+173:         });
+174:         setExistingImages(sortedImages);
+175:         setRemovedExistingIds([]);
+176:         setPrimaryKey(initialPrimary ? `existing:${initialPrimary.id}` : sortedImages[0] ? `existing:${sortedImages[0].id}` : null);
+177:       } catch (error) {
+178:         console.error(error);
+179:         toast.error("Failed to load room");
+180:       } finally {
+181:         if (mounted) {
+182:           setLoading(false);
+183:         }
+184:       }
+185:     }
+186: 
+187:     if (token) {
+188:       loadRoom();
+189:     }
+190: 
+191:     return () => {
+192:       mounted = false;
+193:     };
+194:   }, [id, token]);
+195: 
+196:   useEffect(() => {
+197:     const activeExisting = existingImages.filter((image) => !removedExistingIds.includes(image.id));
+198:     const primaryStillValid =
+199:       (primaryKey && primaryKey.startsWith("existing:") && activeExisting.some((image) => `existing:${image.id}` === primaryKey)) ||
+200:       (primaryKey && primaryKey.startsWith("new:") && newImages.some((image) => `new:${image.localId}` === primaryKey));
+201: 
+202:     if (primaryStillValid) return;
+203: 
+204:     const nextPrimary = activeExisting[0]
+205:       ? `existing:${activeExisting[0].id}`
+206:       : newImages[0]
+207:         ? `new:${newImages[0].localId}`
+208:         : null;
+209: 
+210:     if (nextPrimary !== primaryKey) {
+211:       setPrimaryKey(nextPrimary);
+212:     }
+213:   }, [existingImages, newImages, primaryKey, removedExistingIds]);
+214: 
+215:   const visibleExistingImages = useMemo(
+216:     () => existingImages.filter((image) => !removedExistingIds.includes(image.id)),
+217:     [existingImages, removedExistingIds]
+218:   );
+219: 
+220:   const amenityOptions = useMemo(() => {
+221:     // Prefer backend amenity IDs when names overlap with defaults so edit flows
+222:     // don't show raw numeric IDs in selected chips.
+223:     const byName = new Map();
+224: 
+225:     amenitiesList.forEach((item) => {
+226:       const name = String(item?.name || "").trim();
+227:       if (!name) return;
+228:       if (/^\d+$/.test(name)) return;
+229:       byName.set(name.toLowerCase(), { id: String(item.id), name });
+230:     });
+231: 
+232:     DEFAULT_AMENITIES.forEach((item) => {
+233:       const name = String(item?.name || "").trim();
+234:       if (!name) return;
+235:       const key = name.toLowerCase();
+236:       if (!byName.has(key)) {
+237:         byName.set(key, { id: String(item.id), name });
+238:       }
+239:     });
+240: 
+241:     return Array.from(byName.values());
+242:   }, [amenitiesList]);
+243: 
+244:   useEffect(() => {
+245:     if (!amenityOptions.length) return;
+246: 
+247:     const idToOption = new Map(amenityOptions.map((a) => [String(a.id), a]));
+248:     const nameToOption = new Map(amenityOptions.map((a) => [String(a.name || "").trim().toLowerCase(), a]));
+249: 
+250:     setForm((current) => {
+251:       if (!Array.isArray(current.amenities) || !current.amenities.length) return current;
+252: 
+253:       const normalized = [];
+254:       current.amenities.forEach((raw) => {
+255:         const value = String(raw).trim();
+256:         if (!value) return;
+257: 
+258:         if (idToOption.has(value)) {
+259:           normalized.push(String(idToOption.get(value).id));
+260:           return;
+261:         }
+262: 
+263:         const asName = value.toLowerCase();
+264:         if (nameToOption.has(asName)) {
+265:           normalized.push(String(nameToOption.get(asName).id));
+266:           return;
+267:         }
+268: 
+269:         // Drop legacy numeric-only orphan values like "1,2,3,7,8" from old payloads.
+270:         if (!/^\d+$/.test(value)) {
+271:           normalized.push(value);
+272:         }
+273:       });
+274: 
+275:       const deduped = Array.from(new Set(normalized));
+276:       const same = deduped.length === current.amenities.length && deduped.every((v, i) => v === current.amenities[i]);
+277:       if (same) return current;
+278:       return { ...current, amenities: deduped };
+279:     });
+280:   }, [amenityOptions]);
+281: 
+282:   const filteredAmenityOptions = useMemo(() => {
+283:     const q = amenityQuery.trim().toLowerCase();
+284:     const ordered = [...amenityOptions].sort((a, b) => {
+285:       const aSelected = form.amenities.includes(String(a.id));
+286:       const bSelected = form.amenities.includes(String(b.id));
+287:       if (aSelected !== bSelected) return aSelected ? -1 : 1;
+288:       return String(a.name || "").localeCompare(String(b.name || ""));
+289:     });
+290:     if (!q) return ordered;
+291:     return ordered.filter((item) => String(item?.name || "").toLowerCase().includes(q));
+292:   }, [amenityOptions, amenityQuery, form.amenities]);
+293: 
+294:   const totalImages = visibleExistingImages.length + newImages.length;
+295:   const remainingSlots = Math.max(0, ROOM_IMAGE_LIMIT - totalImages);
+296: 
+297:   const handleFilesAdded = (incomingFiles) => {
+298:     const files = Array.from(incomingFiles || []);
+299:     if (!files.length) return;
+300: 
+301:     if (remainingSlots <= 0) {
+302:       toast.error(`Maximum ${ROOM_IMAGE_LIMIT} room images are allowed`);
+303:       return;
+304:     }
+305: 
+306:     const nextImages = [];
+307:     for (const file of files) {
+308:       if (nextImages.length >= remainingSlots) break;
+309:       if (!ACCEPTED_IMAGE_TYPES.has((file.type || "").toLowerCase())) {
+310:         toast.error(`${file.name} is not a supported image type`);
+311:         continue;
+312:       }
+313:       if (file.size > 5 * 1024 * 1024) {
+314:         toast.error(`${file.name} is larger than 5 MB`);
+315:         continue;
+316:       }
+317:       nextImages.push(toLocalImage(file));
+318:     }
+319: 
+320:     if (!nextImages.length) return;
+321: 
+322:     setNewImages((current) => [...current, ...nextImages]);
+323:   };
+324: 
+325:   const removeNewImage = (localId) => {
+326:     setNewImages((current) => {
+327:       const target = current.find((image) => image.localId === localId);
+328:       if (target?.previewUrl) {
+329:         try {
+330:           URL.revokeObjectURL(target.previewUrl);
+331:         } catch (_) {}
+332:       }
+333:       return current.filter((image) => image.localId !== localId);
+334:     });
+335:   };
+336: 
+337:   const toggleRemoveExisting = (imageId) => {
+338:     setRemovedExistingIds((current) =>
+339:       current.includes(imageId) ? current.filter((value) => value !== imageId) : [...current, imageId]
+340:     );
+341:   };
+342: 
+343:   const moveExistingImage = (fromIndex, toIndex) => {
+344:     setExistingImages((current) => moveItem(current, fromIndex, toIndex));
+345:   };
+346: 
+347:   const moveNewImage = (fromIndex, toIndex) => {
+348:     setNewImages((current) => moveItem(current, fromIndex, toIndex));
+349:   };
+350: 
+351:   const handleThumbDrop = (type, targetIndex) => {
+352:     if (!dragItem || dragItem.type !== type || dragItem.index === targetIndex) return;
+353:     if (type === "existing") {
+354:       moveExistingImage(dragItem.index, targetIndex);
+355:     } else {
+356:       moveNewImage(dragItem.index, targetIndex);
+357:     }
+358:     setDragItem(null);
+359:   };
+360: 
+361:   const resetForm = () => {
+362:     latestNewImagesRef.current.forEach((image) => {
+363:       try {
+364:         URL.revokeObjectURL(image.previewUrl);
+365:       } catch (_) {}
+366:     });
+367:     setForm(emptyForm);
+368:     setExistingImages([]);
+369:     setNewImages([]);
+370:     setRemovedExistingIds([]);
+371:     setPrimaryKey(null);
+372:   };
+373: 
+374:   async function submit(event) {
+375:     event.preventDefault();
+376:     setSaving(true);
+377: 
+378:     try {
+379:       if (removedExistingIds.length) {
+380:         for (const imageId of removedExistingIds) {
+381:           await deleteWithAuth(`/rooms/images/${imageId}`, token);
+382:         }
+383:       }
+384: 
+385:       const payload = new FormData();
+386:       payload.append("room_number", form.room_number.trim());
+387:       payload.append("room_type", form.room_type);
+388:       payload.append("base_price", String(form.base_price || 0));
+389:       payload.append("description", form.description || "");
+390:       payload.append("max_occupancy", String(form.max_occupancy || 2));
+391:       payload.append("bed_type", form.bed_type || "");
+392:       payload.append("room_size", String(form.room_size || 0));
+393:       payload.append("view_type", form.view_type || "");
+394: 
+395:       const orderedExistingIds = visibleExistingImages.map((image) => image.id);
+396:       if (orderedExistingIds.length) {
+397:         payload.append("existing_image_order", orderedExistingIds.join(","));
+398:       }
+399: 
+400:       if (primaryKey?.startsWith("existing:")) {
+401:         payload.append("primary_existing_id", primaryKey.replace("existing:", ""));
+402:       }
+403:       if (primaryKey?.startsWith("new:")) {
+404:         const primaryNewIndex = newImages.findIndex((image) => `new:${image.localId}` === primaryKey);
+405:         if (primaryNewIndex >= 0) {
+406:           payload.append("primary_new_index", String(primaryNewIndex));
+407:         }
+408:       }
+409: 
+410:       newImages.forEach((image) => {
+411:         payload.append("images[]", image.file);
+412:       });
+413: 
+414:       const response = id
+415:         ? await patchWithAuth(`/rooms/${id}`, payload, token)
+416:         : await postWithAuth("/rooms", payload, token);
+417: 
+418:       const room = response.data?.data ? response.data.data : response.data;
+419:       const selectedAmenities = form.amenities || [];
+420:       const numericIds = selectedAmenities
+421:         .map((value) => Number(value))
+422:         .filter((value) => Number.isFinite(value) && value > 0);
+423: 
+424:       if (numericIds.length === selectedAmenities.length) {
+425:         await postWithAuth(`/rooms/${room.id}/amenities`, { amenity_ids: numericIds }, token);
+426:       } else {
+427:         const amenityNames = selectedAmenities
+428:           .map((value) => amenityOptions.find((item) => String(item.id) === String(value))?.name || String(value))
+429:           .filter(Boolean);
+430:         await postWithAuth(`/rooms/${room.id}/amenities`, { amenity_names: amenityNames }, token);
+431:       }
+432: 
+433:       toast.success(id ? "Room updated successfully" : "Room created successfully");
+434:       navigate(id ? `/rooms/${room.id}` : "/rooms");
+435:     } catch (error) {
+436:       console.error(error);
+437:       toast.error(error?.response?.data?.error || "Failed to save room");
+438:     } finally {
+439:       setSaving(false);
+440:     }
+441:   }
+442: 
+443:   if (loading) {
+444:     return <div className="content" style={{ padding: 24, textAlign: "center" }}>Loading room details...</div>;
+445:   }
+446: 
+447:   return (
+448:     <>
+449:       <section className="room-page-header">
+450:         <div className="room-page-header-icon">
+451:           <i className="fa-solid fa-bed" />
+452:         </div>
+453:         <div className="room-page-header-title">
+454:           <h1>{id ? "Edit Room" : "Add New Room"}</h1>
+455:           <p>Manage rooms for the selected hotel with multi-image support and amenities.</p>
+456:         </div>
+457:       </section>
+458: 
+459:       <section className="content">
+460:         <div className="row">
+461:           <div className="col-sm-12">
+462:             <div className="panel panel-bd lobidrag room-form-panel">
+463:         <div className="panel-heading room-form-heading">
+464:           <div>
+465:             <h4 className="room-form-title">{id ? "Edit Room" : "Add New Room"}</h4>
+466:             <p className="room-form-subtitle">Manage rooms for the selected hotel with multi-image support and amenities.</p>
+467:           </div>
+468:           <Link to="/rooms" className="btn room-list-btn">
+469:             <i className="fa-solid fa-list" style={{ marginRight: 6 }} />
+470:             All Rooms
+471:           </Link>
+472:         </div>
+473: 
+474:         <div className="panel-body room-form-layout">
+475:           <div className="room-form-topbar">
+476:             <div>
+477:               <span className="label label-primary">
+478:                 Default room status: Available
+479:               </span>
+480:             </div>
+481:             <div>
+482:               <button type="button" className="btn btn-warning" onClick={id ? () => navigate("/rooms") : resetForm} style={{ borderRadius: 8, padding: "8px 16px", fontWeight: 600 }}>
+483:                 <i className="fa-solid fa-rotate-left" style={{ marginRight: 6 }} />
+484:                 {id ? "Cancel" : "Reset Form"}
+485:               </button>
+486:             </div>
+487:           </div>
+488: 
+489:         <form onSubmit={submit}>
+490:           <div className="room-form-grid">
+491:             <div className="room-form-main-col">
+492:               <div className="room-form-section">
+493:                 <h4 className="room-form-section-title">
+494:                   <i className="fa-solid fa-circle-info" /> Basic Information
+495:                 </h4>
+496:                 <div className="row">
+497:                   <div className="col-sm-6">
+498:                     <div className="form-group">
+499:                       <label>Room Number</label>
+500:                       <input
+501:                         type="text"
+502:                         className={`form-control room-form-input ${form.room_number.length > 0 ? "is-valid" : ""}`}
+503:                         placeholder="Example: 101"
+504:                         value={form.room_number}
+505:                         onChange={(event) => setForm((current) => ({ ...current, room_number: event.target.value }))}
+506:                         required
+507:                       />
+508:                     </div>
+509:                   </div>
+510:                   <div className="col-sm-6">
+511:                     <div className="form-group">
+512:                       <label>Room Type</label>
+513:                       <select
+514:                         className={`form-control room-form-input ${form.room_type ? "is-valid" : ""}`}
+515:                         value={form.room_type}
+516:                         onChange={(event) => setForm((current) => ({ ...current, room_type: event.target.value }))}
+517:                         required
+518:                       >
+519:                         <option value="">Select room type</option>
+520:                         {ROOM_TYPE_OPTIONS.map((option) => (
+521:                           <option key={option} value={option}>
+522:                             {option}
+523:                           </option>
+524:                         ))}
+525:                       </select>
+526:                     </div>
+527:                   </div>
+528:                 </div>
+529: 
+530:                 <div className="row">
+531:                   <div className="col-sm-6">
+532:                     <div className="form-group">
+533:                       <label>Base Price per Night</label>
+534:                       <input
+535:                         type="number"
+536:                         min="0"
+537:                         step="0.01"
+538:                         className={`form-control room-form-input ${form.base_price !== "" ? "is-valid" : ""}`}
+539:                         placeholder="Enter nightly price"
+540:                         value={form.base_price}
+541:                         onChange={(event) => setForm((current) => ({ ...current, base_price: event.target.value }))}
+542:                         required
+543:                       />
+544:                     </div>
+545:                   </div>
+546:                   <div className="col-sm-6">
+547:                     <div className="form-group">
+548:                       <label>Max Occupancy (Adults)</label>
+549:                       <input
+550:                         type="number"
+551:                         min="1"
+552:                         max="20"
+553:                         className={`form-control room-form-input ${form.max_occupancy ? "is-valid" : ""}`}
+554:                         value={form.max_occupancy}
+555:                         onChange={(event) => setForm((current) => ({ ...current, max_occupancy: event.target.value }))}
+556:                         required
+557:                       />
+558:                     </div>
+559:                   </div>
+560:                 </div>
+561: 
+562:                 <div className="row">
+563:                   <div className="col-sm-4">
+564:                     <div className="form-group">
+565:                       <label>Bed Type</label>
+566:                       <select
+567:                         className={`form-control room-form-input ${form.bed_type ? "is-valid" : ""}`}
+568:                         value={form.bed_type}
+569:                         onChange={(event) => setForm((current) => ({ ...current, bed_type: event.target.value }))}
+570:                       >
+571:                         <option value="">Select Bed</option>
+572:                         <option value="1 King Bed">1 King Bed</option>
+573:                         <option value="1 Queen Bed">1 Queen Bed</option>
+574:                         <option value="2 Twin Beds">2 Twin Beds</option>
+575:                         <option value="2 Double Beds">2 Double Beds</option>
+576:                       </select>
+577:                     </div>
+578:                   </div>
+579:                   <div className="col-sm-4">
+580:                     <div className="form-group">
+581:                       <label>Room Size (sq ft)</label>
+582:                       <input
+583:                         type="number"
+584:                         min="0"
+585:                         className={`form-control room-form-input ${form.room_size ? "is-valid" : ""}`}
+586:                         placeholder="e.g. 350"
+587:                         value={form.room_size}
+588:                         onChange={(event) => setForm((current) => ({ ...current, room_size: event.target.value }))}
+589:                       />
+590:                     </div>
+591:                   </div>
+592:                   <div className="col-sm-4">
+593:                     <div className="form-group">
+594:                       <label>View Type</label>
+595:                       <select
+596:                         className={`form-control room-form-input ${form.view_type ? "is-valid" : ""}`}
+597:                         value={form.view_type}
+598:                         onChange={(event) => setForm((current) => ({ ...current, view_type: event.target.value }))}
+599:                       >
+600:                         <option value="">Select View</option>
+601:                         <option value="City View">City View</option>
+602:                         <option value="Ocean View">Ocean View</option>
+603:                         <option value="Garden View">Garden View</option>
+604:                         <option value="Pool View">Pool View</option>
+605:                         <option value="No View">No View</option>
+606:                       </select>
+607:                     </div>
+608:                   </div>
+609:                 </div>
+610: 
+611:                 <div className="form-group">
+612:                   <label>Description</label>
+613:                   <textarea
+614:                     className="form-control room-form-input"
+615:                     rows={4}
+616:                     placeholder="Add room highlights, layout, and customer notes"
+617:                     value={form.description}
+618:                     onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+619:                   />
+620:                 </div>
+621:               </div>
+622: 
+623:               <div className="room-form-section">
+624:                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+625:                   <div>
+626:                     <h4 className="room-form-section-title" style={{ marginBottom: 4 }}>
+627:                       <i className="fa-solid fa-images" /> Room Images
+628:                     </h4>
+629:                     <p style={{ margin: "0", color: "#64748b", fontSize: 13 }}>
+630:                       Upload up to {ROOM_IMAGE_LIMIT} photos. Click the star to choose the primary cover image.
+631:                     </p>
+632:                   </div>
+633:                   <div>
+634:                     <span className="label label-primary" style={{ padding: "8px 12px", background: "#eff6ff", color: "#1d4ed8" }}>
+635:                       {totalImages}/{ROOM_IMAGE_LIMIT} images
+636:                     </span>
+637:                   </div>
+638:                 </div>
+639: 
+640:                 <div
+641:                   className={`room-upload-zone ${dropZoneActive ? "active" : "inactive"}`}
+642:                   onDragOver={(event) => {
+643:                     event.preventDefault();
+644:                     setDropZoneActive(true);
+645:                   }}
+646:                   onDragLeave={() => setDropZoneActive(false)}
+647:                   onDrop={(event) => {
+648:                     event.preventDefault();
+649:                     setDropZoneActive(false);
+650:                     handleFilesAdded(event.dataTransfer.files);
+651:                   }}
+652:                 >
+653:                   <div className="room-upload-icon">
+654:                     <i className="fa-solid fa-cloud-arrow-up" />
+655:                   </div>
+656:                   <h4 className="room-upload-title">Drag images here or select files</h4>
+657:                   <p className="room-upload-subtitle">
+658:                     JPG, PNG, and WEBP files up to 5 MB each.
+659:                   </p>
+660:                   <button type="button" className="btn btn-success" onClick={() => fileInputRef.current?.click()} disabled={remainingSlots <= 0}>
+661:                     Select Images
+662:                   </button>
+663:                   <input
+664:                     ref={fileInputRef}
+665:                     type="file"
+666:                     accept="image/jpeg,image/png,image/webp"
+667:                     multiple
+668:                     style={{ display: "none" }}
+669:                     onChange={(event) => {
+670:                       handleFilesAdded(event.target.files);
+671:                       event.target.value = "";
+672:                     }}
+673:                   />
+674:                 </div>
+675: 
+676:                 <div style={{ marginBottom: 12 }}>
+677:                   <strong style={{ color: "#0f172a" }}>Existing Images</strong>
+678:                   <span style={{ marginLeft: 10, color: "#64748b" }}>Drag thumbnails to reorder them.</span>
+679:                 </div>
+680:                 <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+681:                   {existingImages.length ? (
+682:                     existingImages.map((image, index) => {
+683:                       const isRemoved = removedExistingIds.includes(image.id);
+684:                       const isPrimary = primaryKey === `existing:${image.id}`;
+685:                       return (
+686:                         <div
+687:                           key={image.id}
+688:                           draggable={!isRemoved}
+689:                           onDragStart={() => setDragItem({ type: "existing", index })}
+690:                           onDragEnd={() => setDragItem(null)}
+691:                           onDragOver={(event) => event.preventDefault()}
+692:                           onDrop={() => handleThumbDrop("existing", index)}
+693:                           style={{
+694:                             ...imageCardStyle,
+695:                             opacity: isRemoved ? 0.45 : 1,
+696:                             transform: dragItem?.type === "existing" && dragItem.index === index ? "scale(0.98)" : "none",
+697:                           }}
+698:                         >
+699:                           <div style={{ position: "relative", height: 110, background: "#e2e8f0" }}>
+700:                             <img
+701:                               src={resolveAssetUrl(image.url, "rooms")}
+702:                               alt={getImageName(image, `room-image-${index + 1}`)}
+703:                               style={{ width: "100%", height: "100%", objectFit: "cover" }}
+704:                             />
+705:                             <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 8 }}>
+706:                               <button type="button" style={badgeStyle(isPrimary)} onClick={() => setPrimaryKey(`existing:${image.id}`)}>
+707:                                 <i className="fa-solid fa-star" />
+708:                               </button>
+709:                               <button
+710:                                 type="button"
+711:                                 style={{ ...badgeStyle(false), background: isRemoved ? "#64748b" : "#ef4444" }}
+712:                                 onClick={() => toggleRemoveExisting(image.id)}
+713:                               >
+714:                                 <i className={`fa-solid ${isRemoved ? "fa-rotate-left" : "fa-xmark"}`} />
+715:                               </button>
+716:                             </div>
+717:                             {isRemoved ? (
+718:                               <div style={{ position: "absolute", left: 10, top: 10, background: "#ef4444", color: "#ffffff", borderRadius: 999, padding: "4px 10px", fontSize: 11 }}>
+719:                                 Will be removed
+720:                               </div>
+721:                             ) : null}
+722:                           </div>
+723:                           <div style={{ padding: 12 }}>
+724:                             <div style={{ fontWeight: 700, color: "#1e293b", marginBottom: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+725:                               {getImageName(image, `Image ${index + 1}`)}
+726:                             </div>
+727:                             <div style={{ color: "#64748b", fontSize: 12 }}>
+728:                               {isPrimary ? "Primary image" : "Secondary image"}
+729:                             </div>
+730:                           </div>
+731:                         </div>
+732:                       );
+733:                     })
+734:                   ) : (
+735:                     <div style={{ color: "#64748b" }}>No saved images yet.</div>
+736:                   )}
+737:                 </div>
+738: 
+739:                 <div style={{ marginTop: 24, marginBottom: 12 }}>
+740:                   <strong style={{ color: "#0f172a" }}>New Uploads</strong>
+741:                   <span style={{ marginLeft: 10, color: "#64748b" }}>You can also drag these thumbnails to reorder before saving.</span>
+742:                 </div>
+743:                 <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+744:                   {newImages.length ? (
+745:                     newImages.map((image, index) => {
+746:                       const isPrimary = primaryKey === `new:${image.localId}`;
+747:                       return (
+748:                         <div
+749:                           key={image.localId}
+750:                           draggable
+751:                           onDragStart={() => setDragItem({ type: "new", index })}
+752:                           onDragEnd={() => setDragItem(null)}
+753:                           onDragOver={(event) => event.preventDefault()}
+754:                           onDrop={() => handleThumbDrop("new", index)}
+755:                           style={{
+756:                             ...imageCardStyle,
+757:                             transform: dragItem?.type === "new" && dragItem.index === index ? "scale(0.98)" : "none",
+758:                           }}
+759:                         >
+760:                           <div style={{ position: "relative", height: 110, background: "#e2e8f0" }}>
+761:                             <img src={image.previewUrl} alt={image.file.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+762:                             <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 8 }}>
+763:                               <button type="button" style={badgeStyle(isPrimary)} onClick={() => setPrimaryKey(`new:${image.localId}`)}>
+764:                                 <i className="fa-solid fa-star" />
+765:                               </button>
+766:                               <button type="button" style={{ ...badgeStyle(false), background: "#ef4444" }} onClick={() => removeNewImage(image.localId)}>
+767:                                 <i className="fa-solid fa-xmark" />
+768:                               </button>
+769:                             </div>
+770:                           </div>
+771:                           <div style={{ padding: 12 }}>
+772:                             <div style={{ fontWeight: 700, color: "#1e293b", marginBottom: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+773:                               {image.file.name}
+774:                             </div>
+775:                             <div style={{ color: "#64748b", fontSize: 12 }}>{isPrimary ? "Primary image" : "Ready to upload"}</div>
+776:                           </div>
+777:                         </div>
+778:                       );
+779:                     })
+780:                   ) : (
+781:                     <div style={{ color: "#64748b" }}>New uploads will appear here after you select images.</div>
+782:                   )}
+783:                 </div>
+784:               </div>
+785:             </div>
+786: 
+787:             <div className="room-form-side-col">
+788:               <div className="room-form-section">
+789:                 <h4 className="room-form-section-title">
+790:                   <i className="fa-solid fa-bell-concierge" /> Amenities
+791:                 </h4>
+792:                 <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+793:                   <div style={{ flex: 1 }}>
+794:                     <input
+795:                       type="text"
+796:                       className="form-control room-form-input"
+797:                       placeholder="Search amenities (WiFi, Balcony, AC...)"
+798:                       value={amenityQuery}
+799:                       onChange={(event) => setAmenityQuery(event.target.value)}
+800:                     />
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

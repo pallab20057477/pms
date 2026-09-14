@@ -1,0 +1,115 @@
+====================================================================
+BOOKINGHOTEL.CO.IN - API INTEGRATION SUMMARY
+====================================================================
+
+1. INVENTORY UPDATE API
+--------------------------------------------------------------------
+Purpose: Sent by the Hotel System to update inventory on the Channel Manager.
+Endpoint: https://api.bookinghotel.co.in/api/Inventory/UpdateInventory
+
+Payload Format:
+{
+  "Header": {
+    "Username": "TestUser",
+    "Password": "TestPassword"
+  },
+  "HotelId": "964",
+  "RoomTypeId": "4841",
+  "InfoDays": "12/08/2026|12/08/2026|0",
+  "SoldOut": "0"
+}
+
+
+2. BOOKING PUSH API (WEBHOOK)    
+--------------------------------------------------------------------
+Purpose: Sent by the Channel Manager to the Hotel System to push a new booking.
+Note: "This is booking api push request, this we will send it to you."
+Endpoint: POST /api/channel-manager/push-booking (Public URL e.g. http:///localhost:8080/api/channel-manager/push-booking)
+
+
+Request Format (Sent to our system):
+{
+  "Authentication": {
+    "UserName": "test_user",
+    "Password": "test_password"
+  },
+  "BookingMode": "new", // "new", "modify", or "cancel"
+  "ChannelBookingCancellationUniqID": "5931218471",
+  "ChannelBookingUniqId": "5931218471",
+  "HotelCode": "3", // CRITICAL: This is our internal Hotel ID or the Channel Hotel Code mapped in our system
+  "TotalPrice": 4826.98,
+  "PaybleToHotel": 4827.0,
+  "TotalCommissionAmount": 965.4,
+  "TotalBalance": 4827.0,
+  "TotalDeposit": 0.0,
+  "TotalTax": 229.86,
+  "TotalDiscount": 0.0,
+  "PayStatus": "1",
+  "PaymentMode": "Prepaid",
+  "CurrencyCode": "INR",
+  "TimestampValue": "5931218471-Aug2520262:45PM",
+  "ReservationStays": [
+    {
+      "AdultCount": 1,
+      "BookingCreateDateTime": "2026-08-25T14:45:59.68183+05:30",
+      "BookingMode": "new",
+      "BookingStatus": "Confirm",
+      "BookingStayUniqId": "6479556280",
+      "CancellationPolicy": "Non-Refundable",
+      "CancelRefundAmount": "0.00",
+      "ChannelBookingUniqID": "5931218471",
+      "ChannelChainID": "BookingHotel",
+      "ChildCount": 0,
+      "CommissionAmount": 0,
+      "CurrencyCode": "INR",
+      "DayDuration": 1,
+      "ArrivalDate": "2026-08-27",
+      "DepartureDate": "2026-08-28",
+      "AddressLine": "123 MG Road",
+      "CityName": "Hyderabad",
+      "Country": "In",
+      "EmailID": "nagiri.shiva@example.com",
+      "GuestName": "Nagiri Shivashankar",
+      "PhoneNumber": "+919876543210",
+      "PostalCode": "500001",
+      "StateCode": "TS",
+      "HotelCode": "3",
+      "HotelName": "Hotel Archana Residency",
+      "MealPlanCode": "CP",
+      "NumberofUnit": 1,
+      "PaymentMode": "Online",
+      "RatePlanCategory": "CP",
+      "RatePlanCode": "1", // CRITICAL: Mapped to our Rate Plan ID
+      "RatePlanDescription": "Continental Plan - Room and Breakfast",
+      "Remarks": "Late checkout requested if possible",
+      "RoomTypeCode": "1", // CRITICAL: Mapped to our specific Room Type ID
+      "Smoking": false,
+      "SourceSystem": "Booking.com",
+      "TOTAmountAfterTax": 4826.98,
+      "TOTAmountBeforeTax": 4597.12,
+      "TaxAmount": 229.86,
+      "TaxCurrency": "INR"
+    }
+  ]
+}
+
+Expected Response (From our system back to Channel Manager):
+{
+  "Status": "Success",
+  "ConfirmationNo": 439423
+}
+
+
+3. BOOKING CANCEL API
+--------------------------------------------------------------------
+- Endpoint: POST /api/public/channel-manager/bookinghotel/push
+- The cancellation uses the exact same endpoint as booking creation.
+- Payload Format: Identical to the booking creation payload, but with the following differences:
+  1. `"BookingMode": "cancel"` (This triggers the cancellation logic in our system).
+  2. `"ChannelBookingCancellationUniqID"` or `"ChannelBookingUniqId"` must contain the original booking reference so we can find and cancel it.
+
+Expected Response:
+{
+  "Status": "Success",
+  "ConfirmationNo": "<Booking Reference>"
+}

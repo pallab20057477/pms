@@ -1,0 +1,175 @@
+/* MakeMyTrip / Agoda / Booking.com Enterprise Inspired Theme */
+body, p, span, td, th, li, label, input, select, textarea, .normal-text {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-weight: 400;
+}
+
+:root {
+	--trust-blue: #0A235C;      /* Booking/Agoda deep blue */
+	--action-blue: #0071C2;     /* MMT / Booking action blue */
+	--action-hover: #005999;
+	--bg-color: #F5F7FA;        /* Enterprise light grey bg */
+	--card-bg: #FFFFFF;
+	--border-color: #E2E8F0;
+	--text-main: #1A202C;
+	--text-muted: #718096;
+  
+	--status-success-bg: #E6F4EA;
+	--status-success-text: #137333;
+	--status-danger-bg: #FCE8E6;
+	--status-danger-text: #C5221F;
+}
+
+.staff-att-kpi-row { margin-bottom: 24px; }
+.staff-att-kpi-card { 
+	background-color: var(--card-bg);
+	border: 1px solid var(--border-color); 
+	border-radius: 8px; 
+	padding: 16px 20px; 
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	position: relative;
+	overflow: hidden;
+}
+.staff-att-kpi-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.staff-att-kpi-total { border-left: 4px solid var(--trust-blue); }
+.staff-att-kpi-open { border-left: 4px solid #F6AD55; }
+.staff-att-kpi-closed { border-left: 4px solid var(--status-success-text); }
+.staff-att-kpi-minutes { border-left: 4px solid #805AD5; }
+
+.staff-att-kpi-label { 
+	display:block; 
+	font-size:13px; 
+	color:var(--text-muted); 
+	text-transform:uppercase; 
+	letter-spacing:0.5px; 
+	font-weight:600; 
+}
+.staff-att-kpi-value { 
+	margin-top:8px; 
+	font-size:28px; 
+	line-height:1; 
+	color:var(--text-main); 
+	font-weight:700; 
+}
+
+.staff-att-panel { 
+	background-color: var(--card-bg);
+	border-radius: 8px; 
+	border: 1px solid var(--border-color); 
+	box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+}
+.staff-att-heading { 
+	border-bottom: 1px solid var(--border-color); 
+	padding: 20px 24px;
+	display:flex; 
+	justify-content:space-between; 
+	align-items:flex-start; 
+	gap:12px; 
+}
+.staff-att-title { 
+	margin:0; 
+	color:var(--trust-blue); 
+	font-size:22px; 
+	font-weight:700; 
+	letter-spacing: -0.3px;
+}
+.staff-att-subtitle { 
+	margin:6px 0 0; 
+	font-size:14px; 
+	color:var(--text-muted); 
+}
+
+.staff-att-heading-actions .btn { 
+	background-color: var(--action-blue);
+	color: white;
+	border: none;
+	border-radius: 6px; 
+	font-weight: 600; 
+	padding: 10px 20px;
+	transition: background-color 0.2s;
+	box-shadow: 0 2px 4px rgba(0, 113, 194, 0.2);
+}
+.staff-att-heading-actions .btn:hover {
+	background-color: var(--action-hover);
+}
+
+.staff-att-filter-row { margin-bottom: 20px; }
+.staff-att-input { 
+	border-radius: 6px; 
+	border: 1px solid var(--border-color); 
+	padding: 10px 14px;
+	font-size: 14px;
+	height: auto;
+}
+.staff-att-input:focus { 
+	border-color: var(--action-blue); 
+	box-shadow: 0 0 0 3px rgba(0, 113, 194, 0.15); 
+	outline: none;
+}
+
+.staff-att-filter-actions { 
+	margin-top:10px; 
+	display:flex; 
+	justify-content:flex-end; 
+	gap:12px; 
+}
+.staff-att-filter-actions .btn { 
+	border-radius: 6px; 
+	font-weight: 600; 
+	padding: 10px 24px;
+}
+
+.staff-att-table-wrap { margin-bottom:20px; }
+.staff-att-table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+.staff-att-table thead th { 
+	background: var(--bg-color); 
+	color: var(--text-muted); 
+	border-bottom: 2px solid var(--border-color); 
+	border-top: 1px solid var(--border-color);
+	white-space:nowrap; 
+	font-weight: 600;
+	font-size: 13px;
+	padding: 14px 16px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+.staff-att-table tbody td {
+	padding: 16px;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--border-color);
+	font-size: 14px;
+	color: var(--text-main);
+}
+.staff-att-table tbody tr:hover {
+	background-color: #FAFCFF;
+}
+
+.staff-att-pagination-wrap { margin-bottom:24px; }
+.staff-att-pagination { margin:0; }
+.staff-att-spin { animation: staffAttSpin 1s linear infinite; margin-right:6px; }
+@keyframes staffAttSpin { from { transform:rotate(0deg);} to { transform:rotate(360deg);} }
+
+@media (max-width: 768px) {
+	.staff-att-heading {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.staff-att-heading-actions .btn,
+	.staff-att-filter-actions .btn {
+		width: 100%;
+	}
+
+	.staff-att-filter-actions {
+		flex-direction: column;
+	}
+}

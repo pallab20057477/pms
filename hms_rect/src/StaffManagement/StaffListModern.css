@@ -1,0 +1,274 @@
+/* MakeMyTrip / Agoda / Booking.com Enterprise Inspired Theme */
+body, p, span, td, th, li, label, input, select, textarea, .normal-text {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+}
+
+/* Base Trust Palette */
+:root {
+  --trust-blue: #0A235C;      /* Booking/Agoda deep blue */
+  --action-blue: #0071C2;     /* MMT / Booking action blue */
+  --action-hover: #005999;
+  --bg-color: #F5F7FA;        /* Enterprise light grey bg */
+  --card-bg: #FFFFFF;
+  --border-color: #E2E8F0;
+  --text-main: #1A202C;
+  --text-muted: #718096;
+  
+  --status-success-bg: #E6F4EA;
+  --status-success-text: #137333;
+  --status-danger-bg: #FCE8E6;
+  --status-danger-text: #C5221F;
+}
+
+.staff-kpi-row { margin-bottom: 24px; }
+.staff-kpi-card { 
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color); 
+  border-radius: 8px; 
+  padding: 16px 20px; 
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.staff-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Remove old gradients, use flat clean colors with a left border accent */
+.staff-kpi-total { border-left: 4px solid var(--trust-blue); }
+.staff-kpi-active { border-left: 4px solid var(--status-success-text); }
+.staff-kpi-inactive { border-left: 4px solid var(--status-danger-text); }
+.staff-kpi-assigned { border-left: 4px solid #F6AD55; }
+
+.staff-kpi-label { 
+  display:block; 
+  font-size:13px; 
+  color:var(--text-muted); 
+  text-transform:uppercase; 
+  letter-spacing:0.5px; 
+  font-weight:600; 
+}
+.staff-kpi-value { 
+  margin-top:8px; 
+  font-size:28px; 
+  line-height:1; 
+  color:var(--text-main); 
+  font-weight:700; 
+}
+
+.staff-list-panel { 
+  background-color: var(--card-bg);
+  border-radius: 8px; 
+  border: 1px solid var(--border-color); 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+}
+.staff-list-heading { 
+  border-bottom: 1px solid var(--border-color); 
+  padding: 20px 24px;
+}
+.staff-list-title { 
+  margin:0; 
+  color:var(--trust-blue); 
+  font-size:22px; 
+  font-weight:700; 
+  letter-spacing: -0.3px;
+}
+.staff-list-subtitle { 
+  margin:6px 0 0; 
+  font-size:14px; 
+  color:var(--text-muted); 
+}
+.staff-list-toolbar { 
+  display:flex; 
+  justify-content:space-between; 
+  align-items:center; 
+  margin-bottom:20px; 
+}
+.staff-add-btn { 
+  background-color: var(--action-blue);
+  color: white;
+  border: none;
+  border-radius: 6px; 
+  font-weight: 600; 
+  padding: 10px 20px;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 113, 194, 0.2);
+}
+.staff-add-btn:hover {
+  background-color: var(--action-hover);
+  color: white;
+}
+
+.staff-filter-row { margin-bottom: 16px; }
+
+/* Role Filter Tabs (Replacing chips with professional tabs) */
+.staff-role-strip { 
+  display:flex; 
+  gap:8px; 
+  flex-wrap:wrap; 
+  margin:0 0 20px; 
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 1px;
+}
+.staff-role-chip { 
+  background: transparent; 
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 10px 16px; 
+  display:inline-flex; 
+  align-items:center; 
+  gap:8px; 
+  color:var(--text-muted); 
+  font-size:14px; 
+  font-weight:500; 
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -3px; /* Align border */
+}
+.staff-role-chip strong { 
+  color: var(--text-main); 
+  font-size: 14px; 
+  background: #EDF2F7;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+.staff-role-chip:hover {
+  color: var(--trust-blue);
+}
+.staff-role-chip.is-active { 
+  border-bottom-color: var(--action-blue); 
+  color: var(--trust-blue); 
+  font-weight: 600;
+}
+.staff-role-chip.is-active strong { 
+  background: var(--action-blue);
+  color: white; 
+}
+
+.staff-list-input { 
+  border-radius: 6px; 
+  border: 1px solid var(--border-color); 
+  padding: 10px 14px;
+  font-size: 14px;
+  height: auto;
+}
+.staff-list-input:focus { 
+  border-color: var(--action-blue); 
+  box-shadow: 0 0 0 3px rgba(0, 113, 194, 0.15); 
+  outline: none;
+}
+
+/* Enterprise Data Table */
+.staff-list-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.staff-list-table thead th { 
+  background: var(--bg-color); 
+  color: var(--text-muted); 
+  border-bottom: 2px solid var(--border-color); 
+  border-top: 1px solid var(--border-color);
+  white-space:nowrap; 
+  font-weight: 600;
+  font-size: 13px;
+  padding: 14px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.staff-list-table tbody td {
+  padding: 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+  color: var(--text-main);
+}
+.staff-list-table tbody tr:hover {
+  background-color: #FAFCFF;
+}
+
+.staff-avatar-fallback { 
+  width:44px; 
+  height:44px; 
+  border-radius:50%; 
+  background:#EDF2F7; 
+  color: var(--trust-blue);
+  font-weight: 600;
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+}
+
+.staff-status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+.staff-status-active {
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+}
+.staff-status-inactive {
+  background: var(--status-danger-bg);
+  color: var(--status-danger-text);
+}
+
+.staff-row-actions { display:flex; align-items:center; justify-content:flex-start; gap:12px; flex-wrap:wrap; }
+.staff-row-actions-secondary { display:flex; align-items:center; gap:8px; }
+
+.staff-shift-btn { 
+  min-width:110px; 
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center; 
+  border-radius:6px; 
+  font-weight:600; 
+  padding:8px 12px; 
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--text-main);
+  transition: all 0.2s;
+}
+.staff-shift-btn:hover {
+  border-color: var(--action-blue);
+  color: var(--action-blue);
+}
+
+.staff-icon-btn { 
+  width:32px; 
+  height:32px; 
+  border-radius:6px; 
+  border: 1px solid var(--border-color);
+  background: white;
+  color: var(--text-muted);
+  display:inline-flex; 
+  align-items:center; 
+  justify-content:center; 
+  padding:0; 
+  transition: all 0.2s;
+}
+.staff-icon-btn:hover {
+  background: var(--bg-color);
+  color: var(--action-blue);
+  border-color: var(--action-blue);
+}
+
+.staff-spin { animation: staffSpin 1s linear infinite; margin-right:6px; }
+@keyframes staffSpin { from { transform:rotate(0deg);} to { transform:rotate(360deg);} }
+.staff-pagination { margin:0; }
+
+@media (max-width:768px){
+  .staff-add-btn{ width:100%; }
+  .staff-role-chip { width:100%; justify-content:space-between; border-bottom: none; border-left: 3px solid transparent; }
+  .staff-role-chip.is-active { border-left-color: var(--action-blue); }
+  .staff-role-strip { border-bottom: none; flex-direction: column; }
+  .staff-row-actions { align-items:stretch; }
+  .staff-row-actions-secondary { width:100%; }
+  .staff-shift-btn { width:100%; }
+}

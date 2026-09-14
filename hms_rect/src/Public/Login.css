@@ -1,0 +1,374 @@
+/* ═══════════════════════════════════════════════════
+   Hotel Partner & Staff Extranet Login Styles
+   Institutional OTA Design (Agoda YCS / MakeMyTrip Extranet)
+   ═══════════════════════════════════════════════════ */
+
+.extranet-login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #F8FAFC;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #0F172A;
+}
+
+/* ── Top Header ── */
+.extranet-top-bar {
+  height: 60px;
+  background: #081629;
+  border-bottom: 1px solid #1B3252;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.extranet-top-inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.extranet-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.extranet-logo-img {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
+}
+
+.extranet-portal-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #94A3B8;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.extranet-top-support {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+}
+
+.extranet-support-label {
+  color: #64748B;
+}
+
+.extranet-support-contact {
+  color: #60A5FA;
+  font-weight: 500;
+}
+
+/* ── Main Content Area ── */
+.extranet-main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.extranet-login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.04);
+  padding: 32px;
+}
+
+.extranet-card-header {
+  margin-bottom: 24px;
+}
+
+.extranet-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 6px;
+  letter-spacing: -0.2px;
+}
+
+.extranet-card-subtitle {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── Error Alert ── */
+.extranet-alert-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  margin-bottom: 20px;
+}
+
+.extranet-alert-icon {
+  flex-shrink: 0;
+  color: #DC2626;
+}
+
+/* ── Form Fields ── */
+.extranet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.extranet-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.extranet-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.extranet-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.extranet-forgot-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: #2563EB;
+  text-decoration: none;
+}
+
+.extranet-forgot-link:hover {
+  text-decoration: underline;
+}
+
+.extranet-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.extranet-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #0F172A;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.extranet-input:focus {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.extranet-input.is-invalid {
+  border-color: #EF4444;
+  background-color: #FFFBFB;
+}
+
+.extranet-input.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.extranet-input::placeholder {
+  color: #94A3B8;
+}
+
+.extranet-pw-toggle {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.extranet-pw-toggle:hover {
+  color: #0F172A;
+}
+
+.extranet-field-error {
+  font-size: 11.5px;
+  color: #DC2626;
+  font-weight: 500;
+}
+
+/* ── Options Row ── */
+.extranet-options-row {
+  display: flex;
+  align-items: center;
+}
+
+.extranet-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+.extranet-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 1px solid #CBD5E1;
+  cursor: pointer;
+  accent-color: #2563EB;
+}
+
+/* ── Submit Button ── */
+.extranet-submit-btn {
+  height: 42px;
+  background: #081629;
+  color: #FFFFFF;
+  border: 1px solid #081629;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  margin-top: 4px;
+}
+
+.extranet-submit-btn:hover {
+  background: #1B3252;
+  border-color: #1B3252;
+}
+
+.extranet-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.extranet-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.extranet-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: extranetSpin 0.6s linear infinite;
+}
+
+@keyframes extranetSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Security Footer ── */
+.extranet-card-footer {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #F1F5F9;
+  display: flex;
+  justify-content: center;
+}
+
+.extranet-security-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.extranet-security-badge svg {
+  color: #10B981;
+}
+
+/* ── Page Footer ── */
+.extranet-page-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #E2E8F0;
+  background: #FFFFFF;
+}
+
+.extranet-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #64748B;
+}
+
+.extranet-copyright {
+  margin: 0;
+}
+
+.extranet-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.extranet-footer-links a {
+  color: #64748B;
+  text-decoration: none;
+}
+
+.extranet-footer-links a:hover {
+  color: #0F172A;
+  text-decoration: underline;
+}
+
+.extranet-footer-sep {
+  color: #CBD5E1;
+  font-size: 10px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .extranet-top-support {
+    display: none;
+  }
+  .extranet-login-card {
+    padding: 24px 18px;
+  }
+  .extranet-footer-inner {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}

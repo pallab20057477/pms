@@ -1,0 +1,252 @@
+/* Deep Luxury Blue Extranet Aesthetic - Agoda/MakeMyTrip Inspired */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.ota-dashboard-wrapper {
+  padding: 24px;
+  background-color: #F8FAFC; /* Slate 50 */
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* EXECUTIVE STRIP */
+.ota-exec-strip {
+  background: #0F172A; /* Slate 900 - Deep Luxury */
+  border-radius: 8px;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.ota-exec-title {
+  margin: 0;
+  color: #FFFFFF;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.ota-exec-subtitle {
+  margin: 6px 0 0;
+  color: #94A3B8; /* Slate 400 */
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.ota-date-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #F8FAFC;
+  font-size: 13px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+/* LOADING & ERROR */
+.ota-loading-state {
+  background: #FFFFFF;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ota-error-state {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  padding: 20px;
+  border-radius: 8px;
+  color: #991B1B;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* KPI GRID */
+.ota-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.ota-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0; /* Slate 200 */
+  border-radius: 8px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease;
+}
+
+.ota-kpi-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ota-kpi-decorator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+.ota-kpi-decorator.total { background: #3B82F6; } /* Blue 500 */
+.ota-kpi-decorator.available { background: #10B981; } /* Emerald 500 */
+.ota-kpi-decorator.occupied { background: #8B5CF6; } /* Violet 500 */
+.ota-kpi-decorator.revenue { background: #F59E0B; } /* Amber 500 */
+
+.ota-kpi-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748B; /* Slate 500 */
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.ota-kpi-val {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0F172A; /* Slate 900 */
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.ota-kpi-footer {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* MAIN PANELS */
+.ota-dashboard-panels {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+}
+
+.ota-panel {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.ota-panel-head {
+  padding: 16px 24px;
+  border-bottom: 1px solid #F1F5F9;
+  background: #F8FAFC;
+  border-radius: 8px 8px 0 0;
+}
+
+.ota-panel-head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E293B; /* Slate 800 */
+  letter-spacing: -0.2px;
+}
+
+.ota-panel-body {
+  padding: 24px;
+  flex: 1;
+}
+.ota-panel-body.p-0 {
+  padding: 0;
+}
+
+/* CHART */
+.ota-chart-wrap {
+  height: 260px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ACTION CENTER */
+.ota-action-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ota-action-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #F1F5F9; /* Slate 100 */
+  transition: background-color 0.2s ease;
+}
+.ota-action-item:last-child {
+  border-bottom: none;
+}
+.ota-action-item:hover {
+  background-color: #F8FAFC;
+}
+
+.ota-action-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 4px;
+}
+
+.ota-action-desc {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 400;
+}
+
+.ota-action-count {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 44px;
+  text-align: center;
+}
+.ota-action-count.warn {
+  background: #FEF3C7; /* Amber 100 */
+  color: #B45309; /* Amber 700 */
+}
+.ota-action-count.danger {
+  background: #FEE2E2; /* Red 100 */
+  color: #B91C1C; /* Red 700 */
+}
+.ota-action-count.info {
+  background: #DBEAFE; /* Blue 100 */
+  color: #1D4ED8; /* Blue 700 */
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .ota-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ota-dashboard-panels {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ota-exec-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+  }
+  .ota-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

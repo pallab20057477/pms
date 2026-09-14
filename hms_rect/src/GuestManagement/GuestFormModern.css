@@ -1,0 +1,218 @@
+/* Strict, Flat, High-Density Enterprise Guest Form (Extranet Style) */
+:root {
+  --gf-dark: #000000;
+  --gf-text: #333333;
+  --gf-muted: #666666;
+  --gf-light: #F5F5F5;
+  --gf-border: #E0E0E0;
+  --gf-accent: #0056B3;
+  --gf-accent-hover: #004494;
+  --gf-bg: #F0F2F5;
+}
+
+.guest-page-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--gf-border);
+  margin-bottom: 24px;
+}
+
+.guest-page-header-icon {
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  border: 1px solid var(--gf-border);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gf-accent);
+  font-size: 20px;
+  margin-right: 16px;
+}
+
+.guest-page-header-title h1 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gf-dark);
+}
+
+.guest-page-header-title p {
+  margin: 0;
+  color: var(--gf-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.guest-create-grid {
+  display: flex;
+  gap: 24px;
+}
+
+.guest-form-panel, .guest-side-panel {
+  background: #ffffff;
+  border: 1px solid var(--gf-border);
+  border-radius: 4px;
+  margin-bottom: 24px;
+}
+
+.guest-form-heading {
+  background: #FAFAFA;
+  border-bottom: 1px solid var(--gf-border);
+  padding: 16px 24px;
+}
+
+.guest-form-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gf-dark);
+  text-transform: uppercase;
+}
+
+.guest-form-subtitle {
+  margin: 4px 0 0;
+  color: var(--gf-muted);
+  font-size: 12px;
+}
+
+.guest-form-body, .guest-side-body {
+  padding: 24px;
+}
+
+.guest-section {
+  border: 1px solid var(--gf-border);
+  padding: 20px;
+  margin-bottom: 24px;
+  border-radius: 2px;
+  background: #FAFAFA;
+}
+
+.guest-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gf-dark);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gf-border);
+}
+
+.form-group label {
+  color: var(--gf-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.guest-input {
+  border-radius: 2px;
+  border: 1px solid var(--gf-border);
+  height: 38px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.guest-input:focus {
+  border-color: var(--gf-accent);
+  outline: none;
+}
+
+textarea.guest-input {
+  height: auto;
+}
+
+.guest-file {
+  padding: 6px;
+}
+
+.guest-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gf-border);
+}
+
+.btn-add {
+  background: var(--gf-accent);
+  border: 1px solid var(--gf-accent);
+  color: #fff;
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.btn-add:hover {
+  background: var(--gf-accent-hover);
+  color: #fff;
+}
+
+.guest-cancel-btn {
+  background: #fff;
+  border: 1px solid var(--gf-border);
+  color: var(--gf-text);
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.guest-cancel-btn:hover {
+  background: var(--gf-light);
+}
+
+/* Proof Table */
+.guest-proof-table-wrap {
+  border: 1px solid var(--gf-border);
+  background: #fff;
+}
+
+.guest-proof-table th {
+  background: var(--gf-light) !important;
+  color: var(--gf-muted) !important;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--gf-border) !important;
+}
+
+.guest-proof-table td {
+  vertical-align: middle !important;
+}
+
+/* Side Tips */
+.guest-tip-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--gf-light);
+  border: 1px solid var(--gf-border);
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+.guest-tip-card i {
+  color: var(--gf-accent);
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.guest-tip-card strong {
+  display: block;
+  font-size: 13px;
+  color: var(--gf-text);
+  margin-bottom: 4px;
+}
+
+.guest-tip-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gf-muted);
+}

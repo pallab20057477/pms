@@ -1,0 +1,21 @@
+{
+  "Authentication": {
+    "UserName": "test_user",
+    "Password": "test_password"
+  },
+  "BookingMode": "Book",
+  "ChannelBookingUniqId": "TEST-12345",
+  "HotelCode": "1",
+  "ReservationStays": [
+    {
+      "ArrivalDate": "2026-10-01",
+      "DepartureDate": "2026-10-05",
+      "GuestName": "Jane Doe",
+      "RoomID": "1",
+      "TOTAmountAfterTax": 5000,
+      "AdultCount": 2,
+      "PhoneNumber": "555-0100",
+      "EmailID": "jane@example.com"
+    }
+  ]
+}

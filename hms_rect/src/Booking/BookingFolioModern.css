@@ -1,0 +1,942 @@
+/* ==========================================================================
+   AUTHENTIC OTA HOTEL BOOKING CONFIRMATION & BILLING FOLIO
+   Clean, Professional MakeMyTrip / Agoda / Booking.com Standard
+   ========================================================================== */
+
+:root {
+  --ota-navy: #0a2240;
+  --ota-blue: #0071c2;
+  --ota-blue-hover: #005999;
+  --ota-blue-light: #e8f4fc;
+  --ota-green: #059669;
+  --ota-green-light: #ecfdf5;
+  --ota-amber: #d97706;
+  --ota-amber-light: #fffbeb;
+  --ota-red: #dc2626;
+  --ota-red-light: #fef2f2;
+
+  --ota-bg: #f4f6f8;
+  --ota-card-bg: #ffffff;
+  --ota-border: #e2e8f0;
+  --ota-text-main: #1e293b;
+  --ota-text-muted: #64748b;
+  --ota-text-sub: #475569;
+
+  --ota-radius: 8px;
+  --ota-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ota-page-container {
+  background-color: var(--ota-bg);
+  min-height: 100vh;
+  padding: 20px 24px 60px 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ota-text-main);
+  box-sizing: border-box;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* 1. Header Card */
+.ota-header-card {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.ota-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ota-border);
+}
+
+.ota-hotel-meta {
+  flex: 1;
+  min-width: 260px;
+}
+
+.ota-hotel-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ota-navy);
+  margin: 0 0 6px 0;
+  line-height: 1.25;
+}
+
+.ota-hotel-location {
+  font-size: 13px;
+  color: var(--ota-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ota-sep-dot {
+  color: var(--ota-text-sub);
+}
+
+.ota-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ota-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  background: transparent;
+}
+
+.ota-btn.primary {
+  background: var(--ota-blue);
+  color: #ffffff;
+}
+
+.ota-btn.primary:hover:not(:disabled) {
+  background: var(--ota-blue-hover);
+}
+
+.ota-btn.outline {
+  background: #ffffff;
+  color: var(--ota-text-sub);
+  border-color: #cbd5e1;
+}
+
+.ota-btn.outline:hover {
+  background: #f8fafc;
+  color: var(--ota-text-main);
+  border-color: #94a3b8;
+}
+
+.ota-btn.whatsapp {
+  background: #25d366;
+  color: #ffffff;
+  border-color: #1eb957;
+}
+
+.ota-btn.whatsapp:hover {
+  background: #1eb957;
+}
+
+.ota-btn.razorpay {
+  background: #0a2240;
+  color: #ffffff;
+  margin-top: 8px;
+}
+
+.ota-btn.phonepe {
+  background: linear-gradient(135deg, #5f259f 0%, #7c3aed 100%);
+  color: #ffffff;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, .3);
+}
+
+.ota-btn.phonepe:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4e1d8a 0%, #6d28d9 100%);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, .45);
+}
+
+.ota-btn.full {
+  width: 100%;
+  justify-content: center;
+  height: 38px;
+}
+
+.ota-btn:disabled {
+  background: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed;
+  border-color: transparent !important;
+}
+
+.ota-btn-small {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: var(--ota-blue);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ota-btn-small:hover {
+  background: var(--ota-blue-light);
+  border-color: #93c5fd;
+}
+
+.ota-header-sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 14px;
+}
+
+.ota-ref-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ota-ref-badge span {
+  color: var(--ota-text-muted);
+}
+
+.ota-ref-badge strong {
+  color: var(--ota-navy);
+  font-family: 'Segoe UI Mono', monospace;
+}
+
+.ota-ref-badge i {
+  color: var(--ota-blue);
+  margin-left: 2px;
+}
+
+.ota-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.ota-status-pill.confirmed,
+.ota-status-pill.checked_in,
+.ota-status-pill.in_house {
+  background: var(--ota-green-light);
+  color: var(--ota-green);
+  border: 1px solid #a7f3d0;
+}
+
+.ota-status-pill.reserved {
+  background: var(--ota-blue-light);
+  color: var(--ota-blue);
+  border: 1px solid #bfdbfe;
+}
+
+.ota-status-pill.checked_out {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.ota-status-pill.cancelled {
+  background: var(--ota-red-light);
+  color: var(--ota-red);
+  border: 1px solid #fecaca;
+}
+
+.ota-status-pill i {
+  font-size: 6px;
+}
+
+.ota-date-meta {
+  font-size: 12px;
+  color: var(--ota-text-muted);
+  margin-left: auto;
+}
+
+/* 2. Standard OTA Itinerary Card */
+.ota-itinerary-card {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  padding: 16px 24px;
+  display: grid;
+  grid-template-columns: 1.2fr auto 1.2fr 1.6fr;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.ota-itin-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ota-itin-caption {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ota-text-muted);
+  letter-spacing: 0.5px;
+}
+
+.ota-itin-date {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ota-navy);
+}
+
+.ota-itin-time {
+  font-size: 12px;
+  color: var(--ota-text-muted);
+}
+
+.ota-itin-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ota-night-pill {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ota-text-sub);
+}
+
+.ota-room-category {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ota-blue);
+  text-transform: capitalize;
+}
+
+/* Loading */
+.ota-loading-box {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  color: var(--ota-text-muted);
+}
+
+/* 3. Main Content & Sidebar Grid */
+.ota-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.ota-main-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ota-card {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  overflow: hidden;
+}
+
+.ota-card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--ota-border);
+  background: #fafbfc;
+}
+
+.ota-card-header.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ota-card-header h2 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ota-navy);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ota-occupant-count-pill {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ota-blue);
+  background: var(--ota-blue-light);
+  border: 1px solid #bfdbfe;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.ota-card-body {
+  padding: 18px 20px;
+}
+
+/* Lead Guest Box */
+.ota-lead-guest-box {
+  background: #fafcff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 14px 16px;
+  position: relative;
+}
+
+.ota-lead-guest-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ota-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ota-guest-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px 24px;
+}
+
+.ota-guest-info-grid>div {
+  min-width: 0;
+}
+
+.ota-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ota-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  letter-spacing: 0.3px;
+}
+
+.ota-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ota-text-main);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.ota-link-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ota-blue);
+  text-decoration: underline;
+}
+
+.ota-link-btn:hover {
+  color: var(--ota-blue-hover);
+}
+
+/* Companions Section */
+.ota-companions-section {
+  margin-top: 20px;
+  border-top: 1px solid var(--ota-border);
+  padding-top: 16px;
+}
+
+.ota-companions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ota-subheading {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ota-navy);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.ota-meta-sub-text {
+  font-size: 12px;
+  color: var(--ota-text-muted);
+}
+
+.ota-companion-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.ota-companion-card {
+  background: #ffffff;
+  border: 1px solid var(--ota-border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.ota-companion-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ota-guest-num-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.ota-relation-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ota-blue);
+  background: var(--ota-blue-light);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.ota-companion-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ota-text-main);
+}
+
+.ota-companion-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 6px;
+}
+
+.ota-comp-field-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.ota-sub-label {
+  color: var(--ota-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ota-sub-val {
+  color: var(--ota-text-sub);
+  font-weight: 600;
+  text-align: right;
+}
+
+.ota-link-btn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ota-blue-light);
+  color: var(--ota-blue);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 1px solid #bfdbfe;
+}
+
+.ota-link-btn-pill:hover {
+  background: #dbeafe;
+}
+
+.ota-companion-notes {
+  font-size: 11px;
+  color: var(--ota-text-muted);
+  background: #f8fafc;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ota-companions-empty-box {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--ota-text-muted);
+  display: flex;
+  align-items: center;
+  line-height: 1.4;
+}
+
+/* Itemized Statement */
+.ota-add-charge-panel {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.ota-presets-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ota-preset-chip {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--ota-text-sub);
+}
+
+.ota-preset-chip:hover {
+  border-color: var(--ota-blue);
+  color: var(--ota-blue);
+}
+
+.ota-charge-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 8px;
+}
+
+.ota-input {
+  height: 34px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--ota-text-main);
+  background: #ffffff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ota-input:focus {
+  border-color: var(--ota-blue);
+}
+
+.ota-table-wrap {
+  overflow-x: auto;
+}
+
+.ota-statement-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ota-statement-table th {
+  background: #f8fafc;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ota-text-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--ota-border);
+}
+
+.ota-statement-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ota-border);
+  vertical-align: middle;
+}
+
+.ota-statement-table .text-right {
+  text-align: right;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.ota-item-sub {
+  font-size: 12px;
+  color: var(--ota-text-muted);
+  margin-top: 2px;
+}
+
+.ota-del-btn {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.ota-del-btn:hover {
+  color: var(--ota-red);
+}
+
+.ota-total-row td {
+  background: #f8fafc;
+  border-top: 2px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.ota-total-amount {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ota-navy);
+}
+
+.ota-empty-notice {
+  text-align: center;
+  padding: 20px;
+  color: var(--ota-text-muted);
+  font-size: 13px;
+}
+
+/* Policies */
+.ota-policy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ota-text-sub);
+  line-height: 1.4;
+}
+
+/* Sidebar */
+.ota-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+}
+
+.ota-summary-card {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  overflow: hidden;
+}
+
+.ota-summary-head {
+  background: #0a2240;
+  color: #ffffff;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ota-summary-rows {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ota-summary-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--ota-text-sub);
+}
+
+.ota-summary-line.total {
+  border-top: 1px solid var(--ota-border);
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ota-navy);
+}
+
+.ota-balance-badge {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.ota-balance-badge.paid {
+  background: var(--ota-green-light);
+  border: 1px solid #a7f3d0;
+  color: var(--ota-green);
+}
+
+.ota-balance-badge.due {
+  background: var(--ota-red-light);
+  border: 1px solid #fecaca;
+  color: var(--ota-red);
+}
+
+.ota-balance-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ota-balance-amt {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* Sidebar Actions */
+.ota-side-action-card {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  padding: 16px 18px;
+}
+
+.ota-side-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ota-navy);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.ota-autofill-btn {
+  width: 100%;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.ota-autofill-btn:hover {
+  background: #dcfce7;
+}
+
+.ota-pay-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ota-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ota-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ota-text-muted);
+}
+
+/* Responsiveness */
+@media (max-width: 991px) {
+  .ota-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ota-itinerary-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ota-itin-divider {
+    display: none;
+  }
+
+  .ota-charge-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .ota-page-container {
+    padding: 12px;
+  }
+
+  .ota-header-main {
+    flex-direction: column;
+  }
+
+  .ota-itinerary-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Print Rules for 5-Star Hotel Letterhead Folio */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .ota-page-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .ota-header-actions,
+  .ota-sidebar,
+  .ota-btn-small,
+  .ota-add-charge-panel,
+  .ota-del-btn {
+    display: none !important;
+  }
+
+  .ota-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ota-header-card,
+  .ota-itinerary-card,
+  .ota-card {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    margin-bottom: 12px !important;
+  }
+}

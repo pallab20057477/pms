@@ -1,0 +1,540 @@
+/* ==========================================================================
+   AUTHENTIC OTA RUNNING FOLIOS & IN-HOUSE GUEST LEDGER
+   Clean MakeMyTrip / Agoda / Booking.com Standard
+   ========================================================================== */
+
+:root {
+  --ota-navy: #0a2240;
+  --ota-blue: #0071c2;
+  --ota-blue-hover: #005999;
+  --ota-blue-light: #e8f4fc;
+  --ota-green: #059669;
+  --ota-green-light: #ecfdf5;
+  --ota-amber: #d97706;
+  --ota-amber-light: #fffbeb;
+  --ota-red: #dc2626;
+  --ota-red-light: #fef2f2;
+
+  --ota-bg: #f4f6f8;
+  --ota-card-bg: #ffffff;
+  --ota-border: #e2e8f0;
+  --ota-text-main: #1e293b;
+  --ota-text-muted: #64748b;
+  --ota-text-sub: #475569;
+  
+  --ota-radius: 8px;
+  --ota-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.ota-running-page {
+  background-color: var(--ota-bg);
+  min-height: 100vh;
+  padding: 20px 24px 60px 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ota-text-main);
+  box-sizing: border-box;
+}
+
+/* Header */
+.ota-running-header {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  padding: 18px 22px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ota-header-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ota-header-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--ota-blue-light);
+  color: var(--ota-blue);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.ota-running-header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ota-navy);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ota-badge-live {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ota-green);
+  background: var(--ota-green-light);
+  border: 1px solid #a7f3d0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ota-header-subtitle {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--ota-text-muted);
+}
+
+.ota-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ota-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.ota-btn-primary {
+  background: var(--ota-blue);
+  color: #ffffff;
+}
+
+.ota-btn-primary:hover {
+  background: var(--ota-blue-hover);
+  color: #ffffff;
+}
+
+.ota-btn-secondary {
+  background: #ffffff;
+  color: var(--ota-text-sub);
+  border-color: var(--ota-border);
+}
+
+.ota-btn-secondary:hover {
+  background: #f8fafc;
+  color: var(--ota-navy);
+  border-color: #cbd5e1;
+}
+
+/* Summary Strip */
+.ota-summary-strip {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ota-summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.ota-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ota-text-muted);
+  letter-spacing: 0.5px;
+}
+
+.ota-summary-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ota-navy);
+  margin-top: 2px;
+}
+
+.ota-summary-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--ota-border);
+}
+
+/* Main Panel */
+.ota-panel {
+  background: var(--ota-card-bg);
+  border: 1px solid var(--ota-border);
+  border-radius: var(--ota-radius);
+  box-shadow: var(--ota-shadow);
+  overflow: visible !important;
+}
+
+.ota-panel-topbar {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ota-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ota-search-input-wrap {
+  position: relative;
+  width: 320px;
+  max-width: 100%;
+}
+
+.ota-search-input-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ota-text-muted);
+  font-size: 13px;
+}
+
+.ota-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  font-size: 13px;
+  border: 1px solid var(--ota-border);
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ota-search-input:focus {
+  border-color: var(--ota-blue);
+}
+
+.ota-tab-filters {
+  display: flex;
+  gap: 6px;
+}
+
+.ota-tab-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--ota-border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--ota-text-sub);
+  cursor: pointer;
+}
+
+.ota-tab-btn.active {
+  background: var(--ota-navy);
+  color: #ffffff;
+  border-color: var(--ota-navy);
+}
+
+/* Table */
+.ota-table-wrap {
+  width: 100%;
+  overflow: visible !important;
+}
+
+.ota-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.ota-table thead th {
+  background: #f8fafc;
+  color: var(--ota-text-muted);
+  font-weight: 700;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ota-border);
+}
+
+.ota-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ota-border);
+  vertical-align: middle;
+}
+
+.ota-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.ota-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ota-room-tag {
+  font-weight: 700;
+  color: var(--ota-navy);
+  font-size: 13.5px;
+}
+
+.ota-room-sub {
+  font-size: 11.5px;
+  color: var(--ota-text-muted);
+}
+
+.ota-guest-name {
+  font-weight: 600;
+  color: var(--ota-text-main);
+}
+
+.ota-guest-phone {
+  font-size: 11.5px;
+  color: var(--ota-text-muted);
+}
+
+.ota-dates-main {
+  font-size: 12.5px;
+  color: var(--ota-text-main);
+  font-weight: 500;
+}
+
+.ota-dates-nights {
+  font-size: 11px;
+  color: var(--ota-text-muted);
+}
+
+.ota-badge-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ota-red);
+  background: var(--ota-red-light);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.ota-badge-settled {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ota-green);
+  background: var(--ota-green-light);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* Status Pills */
+.ota-status-pill {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: #f1f5f9;
+  color: var(--ota-text-sub);
+}
+
+.ota-status-pill.status-checkedin {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.ota-status-pill.status-completed {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.ota-status-pill.status-reserved {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.ota-status-pill.status-cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecdd3;
+}
+
+/* Actions in row */
+.ota-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  position: relative;
+}
+
+.ota-btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 5px;
+  border: 1px solid var(--ota-border);
+  background: #ffffff;
+  color: var(--ota-blue);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ota-btn-sm:hover {
+  background: var(--ota-blue-light);
+  border-color: #bfdbfe;
+}
+
+.ota-dropdown-btn {
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--ota-border);
+  background: #ffffff;
+  color: var(--ota-text-muted);
+  cursor: pointer;
+}
+
+.ota-dropdown-btn:hover {
+  background: #f1f5f9;
+}
+
+.ota-dropdown-box {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background: #ffffff;
+  border: 1px solid var(--ota-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+  min-width: 160px;
+  padding: 4px 0;
+}
+
+.ota-dropdown-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ota-dropdown-box li button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: var(--ota-text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.ota-dropdown-box li button:hover {
+  background: #f8fafc;
+}
+
+.ota-dropdown-box li button.text-danger {
+  color: var(--ota-red);
+}
+
+.ota-dropdown-box li button.text-danger:hover {
+  background: var(--ota-red-light);
+}
+
+/* Modals */
+.ota-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 34, 64, 0.4);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.ota-modal-window {
+  background: #ffffff;
+  border-radius: var(--ota-radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+}
+
+.ota-modal-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--ota-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.ota-modal-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ota-navy);
+}
+
+.ota-modal-body {
+  padding: 16px 18px;
+}
+
+.ota-modal-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--ota-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: #f8fafc;
+}
+
+.ota-input, .ota-select {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--ota-border);
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.ota-form-row {
+  margin-bottom: 12px;
+}
+
+.ota-form-row label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ota-text-sub);
+  margin-bottom: 4px;
+}

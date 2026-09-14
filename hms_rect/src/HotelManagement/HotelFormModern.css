@@ -1,0 +1,473 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --hf-dark: #0F172A;
+  --hf-main: #1E293B;
+  --hf-light: #334155;
+  --hf-accent: #2563EB;
+  --hf-accent-hover: #1D4ED8;
+  --hf-accent-light: rgba(37, 99, 235, 0.08);
+  --hf-surface: #FFFFFF;
+  --hf-bg: #F4F7F9;
+  --hf-border: #E2E8F0;
+  --hf-text: #0F172A;
+  --hf-text-muted: #64748B;
+  --hf-success: #10B981;
+}
+
+body {
+  background-color: var(--hf-bg);
+}
+
+/* Premium Header */
+.hotel-page-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 32px 16px 32px;
+  background: transparent;
+  color: var(--hf-dark);
+  margin-bottom: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.hotel-page-header-icon {
+  width: 56px;
+  height: 56px;
+  background: #FFFFFF;
+  border: 1px solid var(--hf-border);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hf-accent);
+  font-size: 24px;
+  margin-right: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.hotel-page-header-title h1 {
+  margin: 0 0 4px 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--hf-dark);
+  letter-spacing: -0.5px;
+}
+
+.hotel-page-header-title p {
+  margin: 0;
+  color: var(--hf-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Panel/Form Shell */
+.hotel-form-panel {
+  border-radius: 20px;
+  border: 1px solid var(--hf-border);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+  background: var(--hf-surface);
+  overflow: hidden;
+  margin: 0 16px 40px;
+}
+
+.hotel-form-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 40px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--hf-border);
+}
+
+.hotel-form-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--hf-dark);
+  letter-spacing: -0.5px;
+}
+
+.hotel-form-subtitle {
+  margin: 6px 0 0;
+  color: var(--hf-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.hotel-list-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 10px 20px;
+  background: var(--hf-surface);
+  border: 1px solid var(--hf-border);
+  color: var(--hf-text-muted);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.hotel-list-btn:hover {
+  background: #F8FAFC;
+  color: var(--hf-dark);
+  border-color: #94A3B8;
+}
+
+.hotel-list-btn i {
+  margin-right: 8px;
+}
+
+/* Layout */
+.hotel-form-layout {
+  padding: 40px;
+}
+
+.hotel-form-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: var(--hf-accent-light);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}
+
+.hotel-form-topbar .label-primary {
+  background: var(--hf-accent);
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.hotel-form-topbar-note {
+  font-size: 14px;
+  color: var(--hf-accent);
+  font-weight: 600;
+}
+
+.hotel-form-grid {
+  display: flex;
+  gap: 40px;
+}
+
+.hotel-form-main-col {
+  flex: 1;
+}
+
+.hotel-form-side-col {
+  flex: 0 0 400px;
+}
+
+/* Sections */
+.hotel-form-section {
+  background: #FFFFFF;
+  border: 1px solid var(--hf-border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.03);
+}
+
+.hotel-form-section-title {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--hf-dark);
+  font-weight: 800;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hf-border);
+}
+
+.hotel-form-section-title i {
+  color: var(--hf-accent);
+  font-size: 20px;
+}
+
+/* Inputs */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--hf-text);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.hotel-form-input {
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+  padding: 14px 16px;
+  height: 52px !important;
+  font-size: 15px;
+  color: var(--hf-dark);
+  background-color: #FFFFFF;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select.hotel-form-input {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.hotel-form-input:hover {
+  border-color: #94A3B8;
+}
+
+.hotel-form-input:focus {
+  border-color: var(--hf-accent);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+.hotel-form-input.is-valid {
+  border-color: var(--hf-success);
+  background-color: #F0FDF4;
+}
+
+select.hotel-form-input.is-valid {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310B981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.hotel-form-input.is-valid:focus {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+/* Actions */
+.hotel-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 32px;
+  border-top: 1px solid var(--hf-border);
+}
+
+.hotel-form-actions .btn {
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+.hotel-form-actions .btn-warning {
+  background: #FFFFFF;
+  color: var(--hf-text-muted);
+  border: 1px solid var(--hf-border);
+}
+
+.hotel-form-actions .btn-warning:hover {
+  background: #F1F5F9;
+  color: var(--hf-dark);
+}
+
+.hotel-form-actions .btn-success {
+  background: var(--hf-accent);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.hotel-form-actions .btn-success:hover:not(:disabled) {
+  background: var(--hf-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+}
+
+/* Custom File Upload Styling */
+.hotel-logo-upload-wrapper {
+  margin-top: 4px;
+}
+
+.hotel-file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.hotel-file-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #F8FAFC;
+  border: 2px dashed #CBD5E1;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.hotel-file-upload-btn:hover {
+  background: #F1F5F9;
+  border-color: var(--hf-accent);
+}
+
+.hotel-file-upload-btn i {
+  font-size: 28px;
+  color: #94A3B8;
+  transition: color 0.2s ease;
+}
+
+.hotel-file-upload-btn:hover i {
+  color: var(--hf-accent);
+}
+
+.hotel-file-upload-btn.has-file {
+  border-color: var(--hf-success);
+  border-style: solid;
+  background: #F0FDF4;
+}
+
+.hotel-file-upload-btn.has-file i {
+  color: var(--hf-success);
+}
+
+.upload-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upload-primary-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--hf-text);
+}
+
+.upload-secondary-text {
+  font-size: 13px;
+  color: var(--hf-text-muted);
+}
+
+.hotel-form-sticky-card {
+  position: sticky;
+  top: 24px;
+}
+
+/* Success Card Styling */
+.hotel-success-card {
+  text-align: center;
+  padding: 60px 40px;
+  max-width: 600px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--hf-border);
+  animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.success-icon-wrap {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: var(--hf-success);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 12px rgba(16, 185, 129, 0.1);
+}
+
+.success-icon-wrap i {
+  color: white;
+  font-size: 36px;
+}
+
+.hotel-success-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--hf-dark);
+  margin-bottom: 12px;
+}
+
+.hotel-success-subtitle {
+  font-size: 16px;
+  color: var(--hf-text-muted);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.hotel-success-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-switch-hotel {
+  background: var(--hf-accent);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+
+.btn-switch-hotel:hover {
+  background: var(--hf-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+.btn-back-list {
+  background: #FFFFFF;
+  color: var(--hf-dark);
+  border: 1px solid var(--hf-border);
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-back-list:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 992px) {
+  .hotel-form-grid { flex-direction: column; }
+  .hotel-form-side-col { flex: auto; }
+  .hotel-form-sticky-card { position: static; }
+}
+
+@media (max-width: 768px) {
+  .hotel-form-layout { padding: 24px; }
+  .hotel-form-topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .hotel-form-actions { flex-direction: column; }
+  .hotel-form-actions .btn { width: 100%; }
+  .hotel-success-actions { flex-direction: column; }
+}

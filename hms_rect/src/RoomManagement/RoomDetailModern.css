@@ -1,0 +1,132 @@
+/* Strict, Flat, High-Density Enterprise Room Detail (Extranet Style) */
+:root {
+  --rd-dark: #000000;
+  --rd-text: #333333;
+  --rd-muted: #666666;
+  --rd-light: #F5F5F5;
+  --rd-border: #E0E0E0;
+  --rd-accent: #0056B3;
+  --rd-accent-hover: #004494;
+  --rd-bg: #F0F2F5;
+}
+
+.ep-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--rd-border);
+  margin-bottom: 24px;
+}
+
+.ep-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.ep-title {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--rd-dark);
+}
+
+.ep-meta-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.ep-meta-tag {
+  background: var(--rd-light);
+  border: 1px solid var(--rd-border);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--rd-text);
+  border-radius: 2px;
+}
+
+.ep-panel {
+  background: #ffffff;
+  border: 1px solid var(--rd-border);
+  border-radius: 4px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.ep-panel-header {
+  background: #FAFAFA;
+  border-bottom: 1px solid var(--rd-border);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ep-panel-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rd-dark);
+  text-transform: uppercase;
+}
+
+.ep-panel-body {
+  padding: 24px;
+}
+
+.ep-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.ep-data-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ep-label {
+  color: var(--rd-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.ep-value {
+  color: var(--rd-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ep-btn {
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--rd-border);
+  background: #ffffff;
+  color: var(--rd-text);
+  transition: background 0.15s;
+}
+
+.ep-btn:hover {
+  background: var(--rd-light);
+}
+
+.ep-btn-primary {
+  background: var(--rd-accent);
+  border-color: var(--rd-accent);
+  color: #ffffff;
+}
+
+.ep-btn-primary:hover {
+  background: var(--rd-accent-hover);
+  color: #ffffff;
+}

@@ -1,0 +1,136 @@
+/* MakeMyTrip / Agoda / Booking.com Enterprise Inspired Theme */
+body, p, span, td, th, li, label, input, select, textarea, .normal-text {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-weight: 400;
+}
+
+:root {
+	--trust-blue: #0A235C;      /* Booking/Agoda deep blue */
+	--action-blue: #0071C2;     /* MMT / Booking action blue */
+	--action-hover: #005999;
+	--bg-color: #F5F7FA;        /* Enterprise light grey bg */
+	--card-bg: #FFFFFF;
+	--border-color: #E2E8F0;
+	--text-main: #1A202C;
+	--text-muted: #718096;
+}
+
+.panel-body {
+    margin-top: 16px;
+	align-items: flex-start;
+	padding: 16px 24px;
+}
+.staff-form-panel { 
+	background-color: var(--card-bg);
+	border-radius: 8px; 
+	border: 1px solid var(--border-color); 
+	box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+}
+.staff-form-heading { 
+	border-bottom: 1px solid var(--border-color); 
+	padding: 20px 24px;
+}
+.staff-form-title { 
+	margin:0; 
+	color:var(--trust-blue); 
+	font-size:22px; 
+	font-weight:700; 
+	letter-spacing: -0.3px;
+}
+.staff-form-subtitle { 
+	margin:6px 0 0; 
+	font-size:14px; 
+	color:var(--text-muted); 
+}
+
+/* Remove gradient, use flat white with shadow */
+.staff-form-section { 
+	border: 1px solid var(--border-color); 
+	background: var(--card-bg); 
+	border-radius: 8px; 
+	padding: 24px; 
+	margin-bottom: 24px; 
+	box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.staff-form-section-title { 
+	margin:0 0 20px; 
+	color: var(--trust-blue); 
+	font-size: 16px; 
+	letter-spacing: 0.2px; 
+	font-weight: 600; 
+	border-bottom: 1px solid var(--border-color);
+	padding-bottom: 10px;
+}
+
+.form-group label {
+	color: var(--text-main);
+	font-weight: 500;
+	font-size: 13px;
+	margin-bottom: 6px;
+}
+
+.staff-form-input { 
+	border-radius: 6px; 
+	border-color: var(--border-color); 
+	padding: 10px 14px;
+	font-size: 14px;
+	height: auto;
+}
+.staff-form-input:focus { 
+	border-color: var(--action-blue); 
+	box-shadow: 0 0 0 3px rgba(0, 113, 194, 0.15); 
+	outline: none;
+}
+.staff-form-highlight { 
+	background: #FAFCFF; 
+	font-weight: 600; 
+	color: var(--trust-blue);
+}
+.staff-form-note { 
+	margin: -4px 0 20px; 
+	padding: 12px 16px; 
+	border-radius: 6px; 
+	background: #EDF2F7; 
+	border-left: 4px solid var(--trust-blue); 
+	color: var(--text-main); 
+	font-size: 13px; 
+	line-height: 1.5;
+}
+
+.staff-form-actions { 
+	display:flex; 
+	gap:12px; 
+	margin-top: 24px;
+	border-top: 1px solid var(--border-color);
+	padding-top: 24px;
+}
+.staff-form-actions .btn {
+	padding: 10px 24px;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+}
+.staff-form-actions .btn-success {
+	background-color: var(--action-blue);
+	border-color: var(--action-blue);
+	box-shadow: 0 2px 4px rgba(0, 113, 194, 0.2);
+}
+.staff-form-actions .btn-success:hover {
+	background-color: var(--action-hover);
+	border-color: var(--action-hover);
+}
+.staff-form-actions .btn-warning {
+	background-color: white;
+	color: var(--text-main);
+	border: 1px solid var(--border-color);
+}
+.staff-form-actions .btn-warning:hover {
+	background-color: var(--bg-color);
+	border-color: var(--text-muted);
+}
+
+.staff-form-spin { animation: staffFormSpin 1s linear infinite; margin-right:6px; }
+@keyframes staffFormSpin { from { transform:rotate(0deg);} to { transform:rotate(360deg);} }
+@media (max-width:768px){ .staff-form-actions{ flex-direction:column; } .staff-form-actions .btn{ width:100%; } }

@@ -1,0 +1,447 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoice {{.Invoice.InvoiceNo}}</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 7mm;
+    }
+    :root {
+      --ink: #1f2733;
+      --muted: #5b6676;
+      --line: #cfd7e2;
+      --line-soft: #e3e8ef;
+      --brand: #0f4b84;
+      --brand-deep: #0a3863;
+      --paper: #fffdf8;
+      --success: #14623b;
+      --danger: #a21c1c;
+      --warning: #8c5a0c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 10px;
+      font-family: "Cambria", "Times New Roman", serif;
+      color: var(--ink);
+      background: #edf1f6;
+      font-size: 11px;
+      line-height: 1.15;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .sheet {
+      max-width: 920px;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid #d5dce6;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 12px 12px 10px;
+    }
+    .brand-head {
+      text-align: center;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--line);
+    }
+    .logo {
+      max-width: 112px;
+      max-height: 62px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 4px;
+    }
+    .hotel-name {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+      color: #17283f;
+      text-transform: uppercase;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .hotel-meta {
+      margin-top: 4px;
+      font-size: 10px;
+      color: #3c4b5f;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    .folio-title {
+      margin-top: 5px;
+      font-size: 22px;
+      color: #111c2d;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      font-weight: 800;
+      line-height: 1.08;
+    }
+    .invoice-meta {
+      margin-top: 6px;
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10px;
+    }
+    .invoice-meta td {
+      padding: 2px 0;
+      vertical-align: top;
+    }
+    .invoice-meta td:first-child {
+      width: 52%;
+      color: #445369;
+    }
+    .invoice-meta td:last-child {
+      text-align: right;
+      color: #101f34;
+      font-weight: 700;
+    }
+    .grid {
+      margin-top: 8px;
+      width: 100%;
+    }
+    .grid-left {
+      float: left;
+      width: 59.5%;
+    }
+    .grid-right {
+      float: right;
+      width: 39%;
+    }
+    .clear { clear: both; }
+    .block {
+      border: 1px solid var(--line);
+      margin-bottom: 6px;
+      background: #ffffff;
+    }
+    .block-head {
+      background: linear-gradient(180deg, #0f4f8b 0%, #0d4478 100%);
+      color: #ffffff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 4px 7px;
+    }
+    .block-body {
+      padding: 5px 7px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10px;
+    }
+    .kv {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .kv td {
+      padding: 2px 0;
+      border-bottom: 1px dotted #d8e0ea;
+      vertical-align: top;
+    }
+    .kv tr:last-child td { border-bottom: 0; }
+    .kv td:first-child {
+      width: 34%;
+      color: var(--muted);
+    }
+    .kv td:last-child {
+      color: #17263b;
+      font-weight: 600;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10px;
+    }
+    .table th,
+    .table td {
+      border: 1px solid var(--line);
+      padding: 4px 5px;
+      vertical-align: top;
+    }
+    .table th {
+      background: linear-gradient(180deg, #0f4f8b 0%, #0d4478 100%);
+      color: #ffffff;
+      font-weight: 700;
+      text-align: left;
+    }
+    .table tbody tr:nth-child(even) {
+      background: #f8fbff;
+    }
+    .text-right { text-align: right; }
+    .summary-table td:first-child {
+      width: 58%;
+      color: #2f3f56;
+      font-weight: 600;
+      background: #f8fafc;
+    }
+    .summary-table td:last-child {
+      text-align: right;
+      font-weight: 700;
+      color: #10233d;
+    }
+    .summary-table .grand td {
+      background: #e8f2fb;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0e3f6d;
+    }
+    .summary-table .due td {
+      background: #fff6ea;
+      color: var(--warning);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .summary-table .credit td {
+      background: #eaf8ee;
+      color: var(--success);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .status-inline {
+      margin-top: 4px;
+      border-top: 1px dashed #c7d1dd;
+      padding-top: 4px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    .status-paid { color: var(--success); }
+    .status-unpaid { color: var(--danger); }
+    .footer {
+      margin-top: 8px;
+      border-top: 1px solid var(--line);
+      padding-top: 6px;
+      text-align: center;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10px;
+      color: #42546b;
+    }
+    .footer strong {
+      color: #17283f;
+      font-size: 11px;
+    }
+    .final-note {
+      margin-top: 2px;
+      font-size: 11px;
+      color: #172b45;
+      font-weight: 600;
+    }
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .sheet {
+        max-width: none;
+        border: 0;
+        box-shadow: none;
+        margin: 0;
+        padding: 4mm 4mm 3mm;
+      }
+      .block,
+      .table,
+      .invoice-meta,
+      .brand-head {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="brand-head">
+      {{if .Hotel.Logo}}
+      <img src="{{.Hotel.Logo}}" alt="logo" class="logo">
+      {{end}}
+      <h1 class="hotel-name">{{.Hotel.Name}}</h1>
+      <div class="hotel-meta">
+        {{.Hotel.Address1}}{{if .Hotel.Address2}}, {{.Hotel.Address2}}{{end}}{{if .Hotel.City}} | {{.Hotel.City}}{{end}}{{if .Hotel.State}}, {{.Hotel.State}}{{end}}{{if .Hotel.Pincode}} {{.Hotel.Pincode}}{{end}}
+      </div>
+      <div class="hotel-meta">
+        {{if .Hotel.Phone}}Contact: {{.Hotel.Phone}}{{end}}{{if .Hotel.Email}} | Email: {{.Hotel.Email}}{{end}}{{if .Hotel.GSTNumber}} | GSTIN: {{.Hotel.GSTNumber}}{{end}}
+      </div>
+      <div class="folio-title">Guest Folio / Invoice</div>
+      <table class="invoice-meta">
+        <tr>
+          <td>Booking Code: {{if .Booking.BookingCode}}{{.Booking.BookingCode}}{{else}}-{{end}}</td>
+          <td>Date: {{.Invoice.InvoiceDate}}</td>
+        </tr>
+        <tr>
+          <td>Invoice Number: {{.Invoice.InvoiceNo}}</td>
+          <td>Room: {{.Room.RoomNumber}} ({{.Room.RoomType}})</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="grid">
+      <div class="grid-left">
+        <div class="block">
+          <div class="block-head">Guest Information</div>
+          <div class="block-body">
+            <table class="kv">
+              <tr><td>Guest Name</td><td>{{.Guest.Name}}</td></tr>
+              <tr><td>Phone</td><td>{{if .Guest.Phone}}{{.Guest.Phone}}{{else}}-{{end}}</td></tr>
+              <tr><td>Email</td><td>{{if .Guest.Email}}{{.Guest.Email}}{{else}}-{{end}}</td></tr>
+              <tr><td>ID Status</td><td>{{if .Guest.IDVerified}}Verified{{else}}Not verified{{end}}</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="block-head">Stay Details</div>
+          <div class="block-body">
+            <table class="kv">
+              <tr><td>Check-in</td><td>{{.Booking.CheckInDate.Format "2006-01-02"}}</td></tr>
+              <tr><td>Check-out</td><td>{{.Booking.CheckOutDate.Format "2006-01-02"}}</td></tr>
+              <tr><td>Total Guests</td><td>{{.TotalGuests}}</td></tr>
+              <tr><td>Rate Plan</td><td>{{if .Booking.RatePlan}}{{.Booking.RatePlan}}{{else}}-{{end}}</td></tr>
+              <tr><td>Invoice Status</td><td>{{.InvoiceStatusLabel}}</td></tr>
+            </table>
+          </div>
+        </div>
+
+        {{if .Companions}}
+        <div class="block">
+          <div class="block-head">Companion Details</div>
+          <div class="block-body" style="padding:0;">
+            <table class="table" style="margin:0; border-top:0; border-left:0; border-right:0;">
+              <thead>
+                <tr>
+                  <th style="width:6%;">#</th>
+                  <th style="width:20%;">Name</th>
+                  <th style="width:16%;">Phone</th>
+                  <th style="width:8%;">Age</th>
+                  <th style="width:12%;">Relation</th>
+                  <th style="width:18%;">ID</th>
+                  <th style="width:14%;">Notes</th>
+                  <th style="width:10%;">Documents</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range .Companions}}
+                <tr>
+                  <td>{{.Serial}}</td>
+                  <td>{{if .Name}}{{.Name}}{{else}}-{{end}}</td>
+                  <td>{{if .Phone}}{{.Phone}}{{else}}-{{end}}</td>
+                  <td>{{if .Age}}{{.Age}}{{else}}-{{end}}</td>
+                  <td>{{if .Relation}}{{.Relation}}{{else}}-{{end}}</td>
+                  <td>{{if .IDType}}{{.IDType}} {{end}}{{if .IDNumber}}{{.IDNumber}}{{else}}-{{end}}</td>
+                  <td>{{if .Notes}}{{.Notes}}{{else}}-{{end}}</td>
+                  <td>{{if .Document}}<a href="{{.Document}}" target="_blank" rel="noopener noreferrer">View</a>{{else}}No Documents{{end}}</td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{end}}
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="width:58%;">Description</th>
+              <th style="width:16%;">Type</th>
+              <th style="width:26%;" class="text-right">Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Room Accommodation ({{.Nights}} night(s))</td>
+              <td>Room</td>
+              <td class="text-right">₹{{printf "%.2f" .BaseRoomCharges}}</td>
+            </tr>
+            {{if gt .ExtraGuestCharges 0.0}}
+            <tr>
+              <td>Extra Guest Charges ({{.ExtraGuestCount}} x {{.Nights}} night(s))</td>
+              <td>Occupancy</td>
+              <td class="text-right">₹{{printf "%.2f" .ExtraGuestCharges}}</td>
+            </tr>
+            {{end}}
+            <tr>
+              <td><strong>Total Room Charges</strong></td>
+              <td>Room</td>
+              <td class="text-right"><strong>₹{{printf "%.2f" .RoomCharges}}</strong></td>
+            </tr>
+            {{range .FolioItems}}
+            <tr>
+              <td>{{if .Description}}{{.Description}}{{else}}Additional Services{{end}}</td>
+              <td>{{if .Type}}{{.Type}}{{else}}Extra{{end}}</td>
+              <td class="text-right">₹{{printf "%.2f" .Amount}}</td>
+            </tr>
+            {{end}}
+            <tr>
+              <td colspan="2"><strong>Subtotal</strong></td>
+              <td class="text-right"><strong>₹{{printf "%.2f" .SubtotalBeforeDiscount}}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-right">
+        <table class="table summary-table">
+          <tbody>
+            <tr><td>Subtotal</td><td>₹{{printf "%.2f" .SubtotalBeforeDiscount}}</td></tr>
+            <tr><td>Discount</td><td>-₹{{printf "%.2f" .Discount}}</td></tr>
+            <tr><td>Occupancy</td><td>I{{.IncludedGuests}} E{{.ExtraGuestCount}} {{.Nights}}N</td></tr>
+            {{if gt .TaxTotal 0.0}}
+            <tr><td>CGST</td><td>₹{{printf "%.2f" .Invoice.TaxCGST}}</td></tr>
+            <tr><td>SGST</td><td>₹{{printf "%.2f" .Invoice.TaxSGST}}</td></tr>
+            {{end}}
+            <tr><td>Tax Total</td><td>₹{{printf "%.2f" .TaxTotal}}</td></tr>
+            <tr class="grand"><td>Grand Total</td><td>₹{{printf "%.2f" .GrandTotal}}</td></tr>
+          </tbody>
+        </table>
+
+        <table class="table" style="margin-top:8px;">
+          <thead>
+            <tr>
+              <th style="width:30%;">Date</th>
+              <th style="width:35%;">Method</th>
+              <th style="width:35%;" class="text-right">Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{if .Payments}}
+              {{range .Payments}}
+              <tr>
+                <td>{{if .PaidOn}}{{.PaidOn.Format "2006-01-02"}}{{else}}-{{end}}</td>
+                <td>{{if .Method}}{{.Method}}{{else}}-{{end}}</td>
+                <td class="text-right">₹{{printf "%.2f" .Amount}}</td>
+              </tr>
+              {{end}}
+            {{else}}
+              <tr><td colspan="3" class="text-right">No payments recorded</td></tr>
+            {{end}}
+            <tr>
+              <td colspan="2"><strong>Advance + Payments</strong></td>
+              <td class="text-right"><strong>₹{{printf "%.2f" .Advance}} + ₹{{printf "%.2f" .PaymentsTotal}}</strong></td>
+            </tr>
+            {{if .IsCancelled}}
+              <tr class="credit"><td colspan="2"><strong>Returned</strong></td><td class="text-right"><strong>₹{{printf "%.2f" .ReturnedAmount}}</strong></td></tr>
+            {{else if ge .BalanceDue 0.0}}
+              <tr class="due"><td colspan="2"><strong>Balance Due</strong></td><td class="text-right"><strong>₹{{printf "%.2f" .BalanceDue}}</strong></td></tr>
+            {{else}}
+              <tr class="credit"><td colspan="2"><strong>Credit Balance</strong></td><td class="text-right"><strong>₹{{printf "%.2f" .Invoice.CreditBalance}}</strong></td></tr>
+            {{end}}
+          </tbody>
+        </table>
+
+        <div class="status-inline {{if .IsCancelled}}status-paid{{else if eq .Invoice.Status "partial"}}status-unpaid{{else if le .BalanceDue 0.0}}status-paid{{else}}status-unpaid{{end}}">
+          Status: {{.InvoiceStatusLabel}}
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+
+    <div class="footer">
+      <strong>{{.Hotel.Name}}</strong>{{if .Hotel.City}} | {{.Hotel.City}}{{end}}{{if .Hotel.State}} | {{.Hotel.State}}{{end}}{{if .Hotel.Phone}} | Contact: {{.Hotel.Phone}}{{end}}<br>
+      {{if .Hotel.Email}}Email: {{.Hotel.Email}}{{end}}
+      <div class="final-note">Thank you for staying with us.</div>
+    </div>
+  </div>
+</body>
+</html>

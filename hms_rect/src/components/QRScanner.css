@@ -1,0 +1,14 @@
+/* Hide html5-qrcode's built-in shaded overlay and scan box — we draw our own */
+#hms-qr-reader > div:not(video) {
+  display: none !important;
+}
+#hms-qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  display: block;
+}
+#hms-qr-reader {
+  border: none !important;
+  padding: 0 !important;
+}

@@ -1,0 +1,122 @@
+/* MakeMyTrip / Agoda / Booking.com Enterprise Inspired Theme */
+body, p, span, td, th, li, label, input, select, textarea, .normal-text {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-weight: 400;
+}
+
+:root {
+	--trust-blue: #0A235C;      /* Booking/Agoda deep blue */
+	--action-blue: #0071C2;     /* MMT / Booking action blue */
+	--bg-color: #F5F7FA;        /* Enterprise light grey bg */
+	--card-bg: #FFFFFF;
+	--border-color: #E2E8F0;
+	--text-main: #1A202C;
+	--text-muted: #718096;
+}
+
+.staff-rank-kpi-row { margin-bottom: 24px; }
+.staff-rank-kpi-card { 
+	background-color: var(--card-bg);
+	border: 1px solid var(--border-color); 
+	border-radius: 8px; 
+	padding: 16px 20px; 
+	box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	position: relative;
+	overflow: hidden;
+}
+.staff-rank-kpi-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.staff-rank-kpi-total { border-left: 4px solid var(--trust-blue); }
+.staff-rank-kpi-top { border-left: 4px solid #137333; }
+.staff-rank-kpi-avg { border-left: 4px solid #805AD5; }
+.staff-rank-kpi-rooms { border-left: 4px solid #F6AD55; }
+
+.staff-rank-kpi-label { 
+	display:block; 
+	font-size:13px; 
+	color:var(--text-muted); 
+	text-transform:uppercase; 
+	letter-spacing:0.5px; 
+	font-weight:600; 
+}
+.staff-rank-kpi-value { 
+	margin-top:8px; 
+	font-size:28px; 
+	line-height:1; 
+	color:var(--text-main); 
+	font-weight:700; 
+}
+
+.staff-rank-panel { 
+	background-color: var(--card-bg);
+	border-radius: 8px; 
+	border: 1px solid var(--border-color); 
+	box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+}
+.staff-rank-heading { 
+	display:flex; 
+	justify-content:space-between; 
+	align-items:center; 
+	border-bottom: 1px solid var(--border-color); 
+	padding: 20px 24px;
+}
+.staff-rank-title { 
+	margin:0; 
+	color:var(--trust-blue); 
+	font-size:22px; 
+	font-weight:700; 
+	letter-spacing: -0.3px;
+}
+.staff-rank-filter-row { margin-bottom: 20px; }
+.staff-rank-input { 
+	border-radius: 6px; 
+	border: 1px solid var(--border-color); 
+	padding: 10px 14px;
+	font-size: 14px;
+	height: auto;
+}
+.staff-rank-input:focus { 
+	border-color: var(--action-blue); 
+	box-shadow: 0 0 0 3px rgba(0, 113, 194, 0.15); 
+	outline: none;
+}
+
+.staff-rank-table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+.staff-rank-table thead th { 
+	background: var(--bg-color); 
+	color: var(--text-muted); 
+	border-bottom: 2px solid var(--border-color); 
+	border-top: 1px solid var(--border-color);
+	white-space:nowrap; 
+	font-weight: 600;
+	font-size: 13px;
+	padding: 14px 16px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+.staff-rank-table tbody td {
+	padding: 16px;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--border-color);
+	font-size: 14px;
+	color: var(--text-main);
+}
+.staff-rank-table tbody tr:hover {
+	background-color: #FAFCFF;
+}
+
+.staff-rank-spin { animation: staffRankSpin 1s linear infinite; margin-right:6px; }
+@keyframes staffRankSpin { from { transform:rotate(0deg);} to { transform:rotate(360deg);} }
+
+@media (max-width:768px) { 
+	.staff-rank-heading{ flex-direction:column; align-items:stretch; gap:12px; } 
+	.staff-rank-heading .btn{ width:100%; } 
+}

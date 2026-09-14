@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Booking Portal Enterprise Validation",
+  "description": "Validating booking portal enterprise design implementation",
+  "version": "1",
+  "when": {
+    "type": "preTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": ""
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Booking Page Quality Check",
+  "description": "Ensuring booking page follows industry standards and trust patterns",
+  "version": "1",
+  "when": {
+    "type": "preTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": ""
+  }
+}

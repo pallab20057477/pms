@@ -1,0 +1,310 @@
+/*
+ * HMS Design System — Global Tokens
+ * Version 2.0 | Enterprise Hotel Management
+ *
+ * Color Rationale:
+ *   --hms-navy   : Authority, trust, stability (primary actions, headers)
+ *   --hms-blue   : Interactive, links, focus rings
+ *   --hms-amber  : Revenue, premium alerts, pending state
+ *   --hms-green  : Available rooms, confirmed, success
+ *   --hms-red    : Cancelled, dirty, critical
+ *   --hms-orange : Warnings, maintenance, partial state
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Brand */
+  --hms-navy:        #1B3A5C;
+  --hms-navy-dark:   #0F2340;
+  --hms-navy-light:  #254D7A;
+  --hms-blue:        #2563EB;
+  --hms-blue-light:  #EFF6FF;
+
+  /* Semantic */
+  --hms-green:       #16A34A;
+  --hms-green-bg:    #F0FDF4;
+  --hms-green-border:#BBF7D0;
+  --hms-amber:       #D97706;
+  --hms-amber-bg:    #FFFBEB;
+  --hms-amber-border:#FDE68A;
+  --hms-red:         #DC2626;
+  --hms-red-bg:      #FEF2F2;
+  --hms-red-border:  #FECACA;
+  --hms-orange:      #EA580C;
+  --hms-orange-bg:   #FFF7ED;
+  --hms-orange-border:#FED7AA;
+
+  /* Neutrals */
+  --hms-bg:          #F1F5F9;
+  --hms-surface:     #FFFFFF;
+  --hms-border:      #E2E8F0;
+  --hms-border-dark: #CBD5E1;
+  --hms-text-primary:#0F172A;
+  --hms-text-body:   #334155;
+  --hms-text-muted:  #64748B;
+  --hms-text-faint:  #94A3B8;
+
+  /* Layout */
+  --hms-sidebar-w:   258px;
+  --hms-header-h:    56px;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* Radius */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+
+  /* Shadow */
+  --shadow-xs: 0 1px 2px rgba(15,23,42,0.06);
+  --shadow-sm: 0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md: 0 4px 6px rgba(15,23,42,0.05), 0 2px 4px rgba(15,23,42,0.04);
+
+  /* Typography */
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ── Apply Inter throughout ── */
+body,
+.content-wrapper,
+.main-sidebar,
+.main-header {
+  font-family: var(--font-base) !important;
+}
+
+/* ── HMS Utility classes ── */
+.hms-page {
+  padding: var(--sp-6);
+  background: var(--hms-bg);
+  min-height: calc(100vh - var(--hms-header-h));
+}
+
+/* Page header row */
+.hms-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+}
+.hms-page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--hms-text-primary);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+.hms-page-sub {
+  font-size: 13px;
+  color: var(--hms-text-muted);
+  margin: 2px 0 0;
+  font-weight: 400;
+}
+
+/* Card */
+.hms-card {
+  background: var(--hms-surface);
+  border: 1px solid var(--hms-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+}
+.hms-card-header {
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--hms-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.hms-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--hms-text-primary);
+  margin: 0;
+}
+.hms-card-body {
+  padding: var(--sp-5);
+}
+
+/* Button */
+.hms-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 7px 14px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-base);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1.4;
+}
+.hms-btn-primary {
+  background: var(--hms-navy);
+  color: #fff;
+  border-color: var(--hms-navy);
+}
+.hms-btn-primary:hover {
+  background: var(--hms-navy-dark);
+  border-color: var(--hms-navy-dark);
+  box-shadow: 0 2px 6px rgba(27,58,92,0.25);
+}
+.hms-btn-secondary {
+  background: var(--hms-surface);
+  color: var(--hms-text-body);
+  border-color: var(--hms-border);
+}
+.hms-btn-secondary:hover {
+  border-color: var(--hms-border-dark);
+  background: #F8FAFC;
+}
+.hms-btn-sm { padding: 5px 10px; font-size: 12px; }
+.hms-btn-icon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status badges */
+.hms-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  line-height: 1.6;
+  letter-spacing: 0.1px;
+}
+.hms-badge-green  { background: var(--hms-green-bg);  color: var(--hms-green);  border-color: var(--hms-green-border); }
+.hms-badge-amber  { background: var(--hms-amber-bg);  color: var(--hms-amber);  border-color: var(--hms-amber-border); }
+.hms-badge-red    { background: var(--hms-red-bg);    color: var(--hms-red);    border-color: var(--hms-red-border); }
+.hms-badge-orange { background: var(--hms-orange-bg); color: var(--hms-orange); border-color: var(--hms-orange-border); }
+.hms-badge-navy   { background: var(--hms-blue-light); color: var(--hms-navy); border-color: #BFDBFE; }
+.hms-badge-gray   { background: #F8FAFC; color: var(--hms-text-muted); border-color: var(--hms-border); }
+
+/* Status dot */
+.hms-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.hms-dot-green  { background: var(--hms-green); }
+.hms-dot-amber  { background: var(--hms-amber); }
+.hms-dot-red    { background: var(--hms-red); }
+.hms-dot-orange { background: var(--hms-orange); }
+.hms-dot-navy   { background: var(--hms-navy); }
+.hms-dot-gray   { background: var(--hms-text-faint); }
+
+/* Table */
+.hms-table { width: 100%; border-collapse: collapse; }
+.hms-table thead th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--hms-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--hms-border);
+  background: #FAFBFC;
+  white-space: nowrap;
+}
+.hms-table tbody td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--hms-text-body);
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+}
+.hms-table tbody tr:last-child td { border-bottom: none; }
+.hms-table tbody tr:hover td { background: #F8FAFC; }
+
+/* Form */
+.hms-form-group { margin-bottom: 16px; }
+.hms-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hms-text-body);
+  margin-bottom: 6px;
+}
+.hms-input,
+.hms-select,
+.hms-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--hms-border);
+  border-radius: var(--r-md);
+  font-size: 13.5px;
+  font-family: var(--font-base);
+  color: var(--hms-text-primary);
+  background: #FAFBFC;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.hms-input:focus,
+.hms-select:focus,
+.hms-textarea:focus {
+  border-color: var(--hms-blue);
+  background: var(--hms-surface);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+}
+.hms-input::placeholder { color: var(--hms-text-faint); }
+
+/* Empty state */
+.hms-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--hms-text-muted);
+}
+.hms-empty-icon {
+  width: 40px; height: 40px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+.hms-empty h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--hms-text-body);
+  margin: 0 0 4px;
+}
+.hms-empty p { font-size: 13px; margin: 0; }
+
+/* Skeleton */
+.hms-skeleton {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 400% 100%;
+  animation: hms-shimmer 1.4s ease infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes hms-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

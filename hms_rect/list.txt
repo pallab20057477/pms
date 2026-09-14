@@ -1,0 +1,386 @@
+Created At: 2026-09-14T08:43:06+05:30
+Completed At: 2026-09-14T08:43:06+05:30
+File Path: `file:///d:/GO/all/project1/hms_rect/src/RoomManagement/RoomList.jsx`
+Total Lines: 378
+Total Bytes: 17105
+Showing lines 1 to 378
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { useEffect, useMemo, useState } from "react";
+2: import { Link, useLocation, useNavigate } from "react-router-dom";
+3: import { useSelector } from "react-redux";
+4: import toast from "react-hot-toast";
+5: import { deleteWithAuth, getWithAuth, patchWithAuth } from "../api";
+6: import { resolveAssetUrl } from "../Functions/assetUrl";
+7: import { ConfirmDialog, RoomStatusDialog } from "./RoomDialogs";
+8: import { formatCurrency, formatShortDate, getStatusMeta, sortRoomImages } from "./roomUi";
+9: import "./RoomListModern.css";
+10: 
+11: function getRoomImages(room) {
+12:   return sortRoomImages(room?.images || []);
+13: }
+14: 
+15: function getPrimaryImage(room) {
+16:   const orderedImages = getRoomImages(room);
+17:   return room?.image || orderedImages[0]?.url || "";
+18: }
+19: 
+20: function getAmenityNames(room) {
+21:   return Array.isArray(room?.amenities) ? room.amenities.map((amenity) => amenity.name).filter(Boolean) : [];
+22: }
+23: 
+24: function getRoomTypeName(room) {
+25:   if (!room) return "-";
+26:   if (typeof room.room_type === "string") return room.room_type;
+27:   if (room.room_type && typeof room.room_type === "object") return room.room_type.name || "-";
+28:   if (room.room_type_details && typeof room.room_type_details === "object") return room.room_type_details.name || "-";
+29:   return "-";
+30: }
+31: 
+32: function EmptyState({ isMaintenanceView }) {
+33:   return (
+34:     <div style={{ padding: 36, textAlign: "center", color: "#64748b" }}>
+35:       <div style={{ fontSize: 38, marginBottom: 10 }}>
+36:         <i className="fa-solid fa-bed" />
+37:       </div>
+38:       <h4 style={{ color: "#0f172a" }}>{isMaintenanceView ? "No rooms in maintenance" : "No rooms found"}</h4>
+39:       <p style={{ marginBottom: 0 }}>
+40:         {isMaintenanceView
+41:           ? "Rooms moved into maintenance will appear here automatically."
+42:           : "Try adjusting your filters or add a new room for the selected hotel."}
+43:       </p>
+44:     </div>
+45:   );
+46: }
+47: 
+48: export default function RoomList() {
+49:   const token = useSelector((state) => state.auth.accesstoken);
+50:   const navigate = useNavigate();
+51:   const location = useLocation();
+52:   const isMaintenanceView = location.pathname === "/rooms/maintenance";
+53: 
+54:   const [rooms, setRooms] = useState([]);
+55:   const [loading, setLoading] = useState(true);
+56:   const [query, setQuery] = useState("");
+57:   const [statusFilter, setStatusFilter] = useState("");
+58:   const [typeFilter, setTypeFilter] = useState("");
+59:   const [statusDialog, setStatusDialog] = useState({ open: false, room: null, initialStatus: "" });
+60:   const [deleteTarget, setDeleteTarget] = useState(null);
+61:   const [actionBusy, setActionBusy] = useState(false);
+62: 
+63:   useEffect(() => {
+64:     let mounted = true;
+65: 
+66:     async function loadRooms() {
+67:       setLoading(true);
+68:       try {
+69:         const response = await getWithAuth(isMaintenanceView ? "/rooms/maintenance" : "/rooms", token);
+70:         const data = response.data?.data ? response.data.data : response.data;
+71:         if (mounted) {
+72:           setRooms(Array.isArray(data) ? data : []);
+73:         }
+74:       } catch (error) {
+75:         console.error("Failed to load rooms", error);
+76:         toast.error("Failed to load rooms");
+77:       } finally {
+78:         if (mounted) {
+79:           setLoading(false);
+80:         }
+81:       }
+82:     }
+83: 
+84:     if (token) {
+85:       loadRooms();
+86:     }
+87: 
+88:     return () => {
+89:       mounted = false;
+90:     };
+91:   }, [isMaintenanceView, token]);
+92: 
+93:   useEffect(() => {
+94:     setStatusFilter(isMaintenanceView ? "maintenance" : "");
+95:   }, [isMaintenanceView]);
+96: 
+97:   const roomTypes = useMemo(() => {
+98:     return [...new Set(rooms.map((room) => getRoomTypeName(room)).filter((t) => t && t !== "-"))].sort((a, b) => a.localeCompare(b));
+99:   }, [rooms]);
+100: 
+101:   const filteredRooms = useMemo(() => {
+102:     return rooms.filter((room) => {
+103:       const roomNumber = String(room.room_number || "").toLowerCase();
+104:       const roomType = getRoomTypeName(room).toLowerCase();
+105:       const matchesQuery = !query.trim() || roomNumber.includes(query.trim().toLowerCase()) || roomType.includes(query.trim().toLowerCase());
+106:       const matchesStatus = !statusFilter || room.status === statusFilter;
+107:       const matchesType = !typeFilter || getRoomTypeName(room) === typeFilter;
+108:       return matchesQuery && matchesStatus && matchesType;
+109:     });
+110:   }, [query, rooms, statusFilter, typeFilter]);
+111: 
+112:   const availableCount = useMemo(() => rooms.filter((room) => room.status === "available").length, [rooms]);
+113:   const occupiedCount = useMemo(() => rooms.filter((room) => room.status === "occupied").length, [rooms]);
+114:   const maintenanceCount = useMemo(() => rooms.filter((room) => room.status === "maintenance").length, [rooms]);
+115: 
+116:   const updateRoomInState = (updatedRoom) => {
+117:     setRooms((current) => {
+118:       if (isMaintenanceView && updatedRoom.status !== "maintenance") {
+119:         return current.filter((room) => room.id !== updatedRoom.id);
+120:       }
+121:       return current.map((room) => (room.id === updatedRoom.id ? { ...room, ...updatedRoom } : room));
+122:     });
+123:   };
+124: 
+125:   const handleStatusSubmit = async (payload) => {
+126:     if (!statusDialog.room) return;
+127:     setActionBusy(true);
+128:     try {
+129:       const response = await patchWithAuth(`/rooms/${statusDialog.room.id}/status`, payload, token);
+130:       const updatedRoom = response.data?.data ? response.data.data : response.data;
+131:       updateRoomInState(updatedRoom);
+132:       setStatusDialog({ open: false, room: null, initialStatus: "" });
+133:       toast.success("Room status updated");
+134:     } catch (error) {
+135:       console.error(error);
+136:       toast.error(error?.response?.data?.error || "Failed to update room status");
+137:     } finally {
+138:       setActionBusy(false);
+139:     }
+140:   };
+141: 
+142:   const handleDelete = async () => {
+143:     if (!deleteTarget) return;
+144:     setActionBusy(true);
+145:     try {
+146:       await deleteWithAuth(`/rooms/${deleteTarget.id}`, token);
+147:       setRooms((current) => current.filter((room) => room.id !== deleteTarget.id));
+148:       setDeleteTarget(null);
+149:       toast.success("Room deleted successfully");
+150:     } catch (error) {
+151:       console.error(error);
+152:       toast.error(error?.response?.data?.error || "Failed to delete room");
+153:     } finally {
+154:       setActionBusy(false);
+155:     }
+156:   };
+157: 
+158:   return (
+159:     <>
+160:       <section className="room-page-header">
+161:         <div className="room-page-header-icon">
+162:           <i className="fa-solid fa-bed" />
+163:         </div>
+164:         <div className="room-page-header-title">
+165:           <h1>{isMaintenanceView ? "Maintenance Rooms" : "Room Management"}</h1>
+166:           <p>{isMaintenanceView ? "Track blocked rooms and return them to service." : "Manage room inventory, images, statuses, and maintenance."}</p>
+167:         </div>
+168:       </section>
+169: 
+170:       <section className="content">
+171:         <div className="row room-kpi-row">
+172:           <div className="col-sm-6 col-md-3">
+173:             <div className="room-kpi-card room-kpi-total">
+174:               <div className="room-kpi-icon"><i className="fa-solid fa-list" /></div>
+175:               <div>
+176:                 <div className="room-kpi-label">Total Rooms</div>
+177:                 <div className="room-kpi-value">{rooms.length}</div>
+178:               </div>
+179:             </div>
+180:           </div>
+181:           <div className="col-sm-6 col-md-3">
+182:             <div className="room-kpi-card room-kpi-available">
+183:               <div className="room-kpi-icon"><i className="fa-solid fa-circle-check" /></div>
+184:               <div>
+185:                 <div className="room-kpi-label">Available</div>
+186:                 <div className="room-kpi-value">{availableCount}</div>
+187:               </div>
+188:             </div>
+189:           </div>
+190:           <div className="col-sm-6 col-md-3">
+191:             <div className="room-kpi-card room-kpi-occupied">
+192:               <div className="room-kpi-icon"><i className="fa-solid fa-user-check" /></div>
+193:               <div>
+194:                 <div className="room-kpi-label">Occupied</div>
+195:                 <div className="room-kpi-value">{occupiedCount}</div>
+196:               </div>
+197:             </div>
+198:           </div>
+199:           <div className="col-sm-6 col-md-3">
+200:             <div className="room-kpi-card room-kpi-maintenance">
+201:               <div className="room-kpi-icon"><i className="fa-solid fa-wrench" /></div>
+202:               <div>
+203:                 <div className="room-kpi-label">Maintenance</div>
+204:                 <div className="room-kpi-value">{maintenanceCount}</div>
+205:               </div>
+206:             </div>
+207:           </div>
+208:         </div>
+209: 
+210:         <div className="panel panel-bd lobidrag room-list-panel">
+211:           <div className="panel-heading room-list-heading">
+212:             <div className="row">
+213:               <div className="col-sm-8">
+214:                 <div className="panel-title">
+215:                   <h4 className="room-list-title">{isMaintenanceView ? "Maintenance Rooms" : "Room List"}</h4>
+216:                   <div className="small text-muted room-list-subtitle">
+217:                     {isMaintenanceView
+218:                       ? "Track blocked rooms and return them to service."
+219:                       : "Manage room inventory, images, statuses, and maintenance."}
+220:                   </div>
+221:                 </div>
+222:               </div>
+223:               <div className="col-sm-4 text-right">
+224:                 <Link to="/rooms/new" className="btn room-add-btn">
+225:                   <i className="fa-solid fa-plus" style={{ marginRight: 6 }} />
+226:                   Add New Room
+227:                 </Link>
+228:               </div>
+229:             </div>
+230:           </div>
+231: 
+232:           <div className="panel-body">
+233:             <div className="row room-filter-row">
+234:               <div className="col-md-4">
+235:                 <div className="form-group" style={{ marginBottom: 12 }}>
+236:                   <label>Search</label>
+237:                   <input
+238:                     className="form-control"
+239:                     placeholder="Room number or type"
+240:                     value={query}
+241:                     onChange={(event) => setQuery(event.target.value)}
+242:                   />
+243:                 </div>
+244:               </div>
+245:               <div className="col-md-3">
+246:                 <div className="form-group" style={{ marginBottom: 12 }}>
+247:                   <label>Status</label>
+248:                   <select className="form-control" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} disabled={isMaintenanceView}>
+249:                     <option value="">All statuses</option>
+250:                     <option value="available">Available</option>
+251:                     <option value="reserved">Reserved</option>
+252:                     <option value="occupied">Occupied</option>
+253:                     <option value="dirty">Dirty</option>
+254:                     <option value="cleaning">Cleaning</option>
+255:                     <option value="maintenance">Maintenance</option>
+256:                   </select>
+257:                 </div>
+258:               </div>
+259:               <div className="col-md-3">
+260:                 <div className="form-group" style={{ marginBottom: 12 }}>
+261:                   <label>Room Type</label>
+262:                   <select className="form-control" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}>
+263:                     <option value="">All room types</option>
+264:                     {roomTypes.map((type) => (
+265:                       <option key={type} value={type}>
+266:                         {type}
+267:                       </option>
+268:                     ))}
+269:                   </select>
+270:                 </div>
+271:               </div>
+272:               <div className="col-md-2" />
+273:             </div>
+274:             <div className="text-muted room-filter-result">{filteredRooms.length} room(s) match the current filters.</div>
+275:             {loading ? (
+276:               <div className="text-center text-muted room-loading-wrap"><i className="fa-solid fa-spinner fa-spin spinning-icon" /> Loading rooms...</div>
+277:             ) : !filteredRooms.length ? (
+278:               <EmptyState isMaintenanceView={isMaintenanceView} />
+279:             ) : (
+280:               <div className="table-responsive room-table-wrap">
+281:                 <table className="table table-bordered table-hover room-table">
+282:                   <thead>
+283:                     <tr>
+284:                       <th>Photo</th>
+285:                       <th>Room</th>
+286:                       <th>Inventory Config</th>
+287:                       <th>Price</th>
+288:                       <th>Amenities</th>
+289:                       <th>Status</th>
+290:                       <th>Maintenance</th>
+291:                       <th>Actions</th>
+292:                     </tr>
+293:                   </thead>
+294:                   <tbody>
+295:                     {filteredRooms.map((room) => {
+296:                       const statusMeta = getStatusMeta(room.status);
+297:                       const amenityNames = getAmenityNames(room);
+298:                       const primaryImage = getPrimaryImage(room);
+299:                       return (
+300:                         <tr key={room.id}>
+301:                           <td style={{ width: 74 }}>
+302:                             {primaryImage ? (
+303:                               <img src={resolveAssetUrl(primaryImage, "rooms")} alt={`Room ${room.room_number}`} style={{ width: 52, height: 52, borderRadius: 12, objectFit: "cover" }} />
+304:                             ) : (
+305:                               <div style={{ width: 52, height: 52, borderRadius: 12, background: "#e2e8f0" }} />
+306:                             )}
+307:                           </td>
+308:                           <td>
+309:                             <strong>Room {room.room_number}</strong>
+310:                             <div style={{ color: "#666666", fontSize: 11 }}>{getRoomImages(room).length} image(s)</div>
+311:                           </td>
+312:                           <td>
+313:                             <div style={{ fontWeight: 600 }}>{getRoomTypeName(room)}</div>
+314:                             <div style={{ color: "#666666", fontSize: 11 }}>
+315:                               {room.bed_type || "N/A"} &bull; {room.max_occupancy || 2} Pax
+316:                               <br/>
+317:                               {room.room_size ? `${room.room_size} sqft` : "N/A"} &bull; {room.view_type || "N/A"}
+318:                             </div>
+319:                           </td>
+320:                           <td>{formatCurrency(room.base_price)}</td>
+321:                           <td>{amenityNames.length ? amenityNames.join(", ") : "-"}</td>
+322:                           <td>
+323:                             <span style={{ background: statusMeta.bg, color: statusMeta.color, borderRadius: 999, padding: "6px 12px", fontWeight: 700, fontSize: 12 }}>
+324:                               {statusMeta.label}
+325:                             </span>
+326:                           </td>
+327:                           <td>
+328:                             {room.status === "maintenance" ? (
+329:                               <div>
+330:                                 <div>{room.maintenance_reason || "No reason"}</div>
+331:                                 <small style={{ color: "#64748b" }}>{formatShortDate(room.maintenance_until)}</small>
+332:                               </div>
+333:                             ) : "-"}
+334:                           </td>
+335:                           <td>
+336:                             <button type="button" className="room-action-btn room-btn-view" onClick={() => navigate(`/rooms/${room.id}`)}><i className="fa-solid fa-eye" /> View</button>
+337:                             <button type="button" className="room-action-btn room-btn-edit" onClick={() => navigate(`/rooms/${room.id}/edit`)}><i className="fa-solid fa-pen-to-square" /> Edit</button>
+338:                             <button type="button" className="room-action-btn room-btn-status" onClick={() => setStatusDialog({ open: true, room, initialStatus: room.status })}><i className="fa-solid fa-gear" /> Status</button>
+339:                             <button type="button" className={`room-action-btn ${room.status === "maintenance" ? "room-btn-success" : "room-btn-warning"}`} onClick={() => setStatusDialog({ open: true, room, initialStatus: room.status === "maintenance" ? "available" : "maintenance" })}>
+340:                               <i className={`fa-solid ${room.status === "maintenance" ? "fa-rotate-left" : "fa-wrench"}`} />
+341:                               {room.status === "maintenance" ? "Restore" : "Maintenance"}
+342:                             </button>
+343:                             <button type="button" className="room-action-btn room-btn-delete" onClick={() => setDeleteTarget(room)}><i className="fa-solid fa-trash" /> Delete</button>
+344:                           </td>
+345:                         </tr>
+346:                       );
+347:                     })}
+348:                   </tbody>
+349:                 </table>
+350:               </div>
+351:             )}
+352:           </div>
+353:         </div>
+354:       </section>
+355: 
+356:       <RoomStatusDialog
+357:         open={statusDialog.open}
+358:         room={statusDialog.room}
+359:         initialStatus={statusDialog.initialStatus}
+360:         busy={actionBusy}
+361:         onClose={() => setStatusDialog({ open: false, room: null, initialStatus: "" })}
+362:         onSubmit={handleStatusSubmit}
+363:       />
+364: 
+365:       <ConfirmDialog
+366:         open={Boolean(deleteTarget)}
+367:         title="Delete room"
+368:         message={deleteTarget ? `Room ${deleteTarget.room_number} will be deleted permanently. This cannot be undone.` : ""}
+369:         confirmLabel="Delete"
+370:         tone="danger"
+371:         busy={actionBusy}
+372:         onClose={() => setDeleteTarget(null)}
+373:         onConfirm={handleDelete}
+374:       />
+375:     </>
+376:   );
+377: }
+378: 
+The above content shows the entire, complete file contents of the requested file.
