@@ -1,0 +1,62 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment & secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Node / frontend
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+coverage/
+.npm/
+
+# Go / backend
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Runtime / temp / uploads
+tmp/
+**/tmp/
+uploads/
+**/uploads/
+storage/
+logs/
+*.log
+
+# Database / local data
+*.sqlite
+*.sqlite3
+*.db
+
+# Generated docs / caches
+.cache/
+.parcel-cache/
+.next/
+out/
+
+# Test outputs
+*.coverage
+coverage.xml
+
+# keep lockfiles tracked
+!package-lock.json
+!yarn.lock
+!pnpm-lock.yaml
+!go.sum

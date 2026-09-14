@@ -798,4 +798,35 @@ export default function RoomForm() {
                       value={amenityQuery}
                       onChange={(event) => setAmenityQuery(event.target.value)}
                     />
-The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
+
+                  </div>
+                  <div className="room-amenities-grid">
+                    {filteredAmenityOptions.map((amenity) => (
+                      <label key={amenity.id} className="room-amenity-item" style={{display: "block", marginBottom: 5}}>
+                        <input
+                          type="checkbox"
+                          checked={form.amenities.includes(String(amenity.id))}
+                          onChange={() => handleAmenityChange(String(amenity.id))}
+                          style={{marginRight: 8}}
+                        />
+                        <span className="room-amenity-label">{amenity.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="room-form-actions" style={{ marginTop: 24, padding: 20, background: "#fff", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end", gap: 12 }}>
+            <button type="button" className="btn btn-default" onClick={resetForm} disabled={saving}>Reset</button>
+            <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? "Saving..." : id ? "Save Changes" : "Create Room"}</button>
+          </div>
+        </form>
+        </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
