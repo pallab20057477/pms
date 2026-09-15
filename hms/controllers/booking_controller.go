@@ -732,6 +732,7 @@ func ListBookings(c *gin.Context) {
 		like := "%" + q + "%"
 		query = query.Joins("LEFT JOIN guests ON guests.id = bookings.guest_id AND guests.deleted_at IS NULL").
 			Joins("LEFT JOIN rooms ON rooms.id = bookings.room_id AND rooms.deleted_at IS NULL").
+			Joins("LEFT JOIN room_types ON room_types.id = rooms.room_type_id AND room_types.deleted_at IS NULL").
 			Where("bookings.booking_code ILIKE ? OR guests.name ILIKE ? OR rooms.room_number ILIKE ?", like, like, like)
 		joinedGuestRoom = true
 	}
@@ -794,7 +795,8 @@ func ListBookings(c *gin.Context) {
 	if !joinedGuestRoom {
 		rowsQuery = rowsQuery.
 			Joins("LEFT JOIN guests ON guests.id = bookings.guest_id AND guests.deleted_at IS NULL").
-			Joins("LEFT JOIN rooms ON rooms.id = bookings.room_id AND rooms.deleted_at IS NULL")
+			Joins("LEFT JOIN rooms ON rooms.id = bookings.room_id AND rooms.deleted_at IS NULL").
+			Joins("LEFT JOIN room_types ON room_types.id = rooms.room_type_id AND room_types.deleted_at IS NULL")
 	}
 	if err := rowsQuery.
 		Select(`bookings.id, bookings.booking_code, bookings.guest_id, bookings.room_id, bookings.hotel_id,
@@ -807,7 +809,7 @@ func ListBookings(c *gin.Context) {
 			COALESCE(guests.name, '') as guest_name,
 			COALESCE(guests.phone, '') as guest_phone,
 			COALESCE(rooms.room_number, '') as room_number,
-			COALESCE(rooms.room_type, '') as room_type`).
+			COALESCE(room_types.name, '') as room_type`).
 		Order("bookings.id desc").
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).
