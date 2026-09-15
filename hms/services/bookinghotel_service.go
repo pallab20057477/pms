@@ -31,7 +31,7 @@ type BookingHotelInventoryRequest struct {
 	Header     BookingHotelInventoryHeader `json:"Header"`
 	HotelID    string                      `json:"HotelId"`
 	RoomTypeID string                      `json:"RoomTypeId"`
-	InfoDays   string                      `json:"InfoDays"`   // Format: DD/MM/YYYY|DD/MM/YYYY|Inventory
+	InfoDays   string                      `json:"InfoDays"` // Format: DD/MM/YYYY|DD/MM/YYYY|Inventory
 }
 
 type BookingHotelInventoryResponse struct {
@@ -56,7 +56,7 @@ func PushInventoryToBookingHotel(hotelID uint, roomTypeID uint, fromDate, toDate
 	if err := config.DB.Where("partner_name = ?", "BookingHotel").First(&partner).Error; err != nil {
 		return nil, fmt.Errorf("BookingHotel partner integration not found in database")
 	}
-	
+
 	apiUrl := partner.InventoryURL
 	if apiUrl == "" {
 		apiUrl = "https://api.bookinghotel.co.in/api/Inventory/UpdateInventory"
@@ -217,8 +217,85 @@ type BookingHotelPushBookingRequest struct {
 }
 
 type BookingHotelPushBookingResponse struct {
-	Status         string `json:"Status"`
-	ConfirmationNo interface{}   `json:"ConfirmationNo"` // can be string or numeric ID matching BookingHotel's response format
+	Status         string      `json:"Status"`
+	ConfirmationNo interface{} `json:"ConfirmationNo"` // can be string or numeric ID matching BookingHotel's response format
+}
+
+func getBookingHotelRoomCode(stay BookingHotelReservationStay) string {
+	roomCode := strings.TrimSpace(stay.RoomTypeCode)
+	if roomCode == "" {
+		roomCode = strings.TrimSpace(stay.RoomID)
+	}
+	return roomCode
+}
+
+func resolveBookingHotelRoomType(hotelID uint, partnerID uint, stay BookingHotelReservationStay) (models.RoomType, error) {
+	roomCode := getBookingHotelRoomCode(stay)
+	if roomCode == "" {
+		return models.RoomType{}, fmt.Errorf("missing RoomTypeCode/RoomID in reservation stay")
+	}
+
+	var roomType models.RoomType
+	var roomMapping models.ChannelRoomMapping
+
+	if err := config.DB.Where("hotel_id = ? AND partner_integration_id = ? AND ota_room_type_code = ?", hotelID, partnerID, roomCode).First(&roomMapping).Error; err == nil && roomMapping.RoomTypeID > 0 {
+		if err := config.DB.Where("id = ? AND hotel_id = ? AND deleted_at IS NULL", roomMapping.RoomTypeID, hotelID).First(&roomType).Error; err == nil && roomType.ID > 0 {
+			return roomType, nil
+		}
+	}
+
+	if err := config.DB.Where("hotel_id = ? AND channel_room_code = ? AND deleted_at IS NULL", hotelID, roomCode).First(&roomType).Error; err == nil && roomType.ID > 0 {
+		config.DB.Where("hotel_id = ? AND partner_integration_id = ? AND ota_room_type_code = ?", hotelID, partnerID, roomCode).First(&roomMapping)
+		if roomMapping.ID == 0 {
+			_ = config.DB.Create(&models.ChannelRoomMapping{
+				HotelID:              hotelID,
+				PartnerIntegrationID: partnerID,
+				RoomTypeID:           roomType.ID,
+				OTARoomTypeCode:      roomCode,
+			}).Error
+		}
+		return roomType, nil
+	}
+
+	if rID, err := strconv.ParseUint(roomCode, 10, 32); err == nil && rID > 0 {
+		if err := config.DB.Where("id = ? AND hotel_id = ? AND deleted_at IS NULL", uint(rID), hotelID).First(&roomType).Error; err == nil && roomType.ID > 0 {
+			config.DB.Where("hotel_id = ? AND partner_integration_id = ? AND ota_room_type_code = ?", hotelID, partnerID, roomCode).First(&roomMapping)
+			if roomMapping.ID == 0 {
+				_ = config.DB.Create(&models.ChannelRoomMapping{
+					HotelID:              hotelID,
+					PartnerIntegrationID: partnerID,
+					RoomTypeID:           roomType.ID,
+					OTARoomTypeCode:      roomCode,
+				}).Error
+			}
+			return roomType, nil
+		}
+	}
+
+	roomTypeName := strings.TrimSpace(stay.RatePlanDescription)
+	if roomTypeName == "" {
+		roomTypeName = "Unmapped Type (" + roomCode + ")"
+	}
+
+	roomType = models.RoomType{
+		HotelID:         hotelID,
+		Name:            roomTypeName,
+		ChannelRoomCode: roomCode,
+		BasePrice:       stay.TOTAmountBeforeTax,
+		MaxOccupancy:    10,
+	}
+	if err := config.DB.Create(&roomType).Error; err != nil {
+		return models.RoomType{}, fmt.Errorf("no room type available or mapped for hotel %d", hotelID)
+	}
+
+	_ = config.DB.Create(&models.ChannelRoomMapping{
+		HotelID:              hotelID,
+		PartnerIntegrationID: partnerID,
+		RoomTypeID:           roomType.ID,
+		OTARoomTypeCode:      roomCode,
+	}).Error
+
+	return roomType, nil
 }
 
 // ProcessBookingHotelPushRequest handles incoming Book, Cancel, and Modify requests from BookingHotel
@@ -239,8 +316,13 @@ func ProcessBookingHotelPushRequest(req BookingHotelPushBookingRequest) (*Bookin
 	}
 
 	var hotelMapping models.ChannelHotelMapping
-	config.DB.Where("ota_hotel_code = ? AND partner_integration_id = ?", hotelCode, partner.ID).First(&hotelMapping)
-	
+	if err := config.DB.Where("ota_hotel_code = ? AND partner_integration_id = ?", hotelCode, partner.ID).First(&hotelMapping).Error; err != nil || hotelMapping.HotelID == 0 {
+		return &BookingHotelPushBookingResponse{
+			Status:         "Fail",
+			ConfirmationNo: 0,
+		}, fmt.Errorf("target hotel '%s' is not mapped to BookingHotel", hotelCode)
+	}
+
 	// 0. Authenticate the incoming webhook
 	expectedUser := hotelMapping.OTAUsername
 	expectedPass := hotelMapping.OTAPassword
@@ -256,20 +338,6 @@ func ProcessBookingHotelPushRequest(req BookingHotelPushBookingRequest) (*Bookin
 	var hotelErr error
 	if hotelMapping.HotelID > 0 {
 		hotelErr = config.DB.Where("id = ? AND deleted_at IS NULL", hotelMapping.HotelID).First(&hotel).Error
-	} else {
-		// Fallback to legacy checks
-		hotelErr = config.DB.Where("channel_hotel_code = ? AND deleted_at IS NULL", hotelCode).First(&hotel).Error
-		if hotel.ID == 0 {
-			if idNum, err := strconv.ParseUint(hotelCode, 10, 32); err == nil && idNum > 0 {
-				hotelErr = config.DB.Where("id = ? AND deleted_at IS NULL", uint(idNum)).First(&hotel).Error
-			}
-		}
-		if hotel.ID == 0 {
-			hotelErr = config.DB.Where("public_token = ? AND deleted_at IS NULL", hotelCode).First(&hotel).Error
-		}
-		if hotel.ID == 0 {
-			hotelErr = config.DB.Where("status = 'active' AND deleted_at IS NULL").First(&hotel).Error
-		}
 	}
 
 	if hotel.ID == 0 || hotelErr != nil {
@@ -376,53 +444,9 @@ func handleBookingHotelCreate(hotelID uint, partnerID uint, req BookingHotelPush
 		}
 
 		// 2. Resolve RoomType in PMS
-		var roomType models.RoomType
-		roomIDParam := strings.TrimSpace(stay.RoomID)
-		if roomIDParam == "" {
-			roomIDParam = strings.TrimSpace(stay.RoomTypeCode)
-		}
-
-		// A. Try mapping table first
-		var roomMapping models.ChannelRoomMapping
-		if roomIDParam != "" {
-			config.DB.Where("hotel_id = ? AND partner_integration_id = ? AND ota_room_type_code = ?", hotelID, partnerID, roomIDParam).First(&roomMapping)
-			if roomMapping.RoomTypeID > 0 {
-				config.DB.Where("id = ? AND deleted_at IS NULL", roomMapping.RoomTypeID).First(&roomType)
-			}
-		}
-
-		// B. Try matching by ChannelRoomCode legacy
-		if roomType.ID == 0 && roomIDParam != "" {
-			_ = config.DB.Where("hotel_id = ? AND channel_room_code = ? AND deleted_at IS NULL", hotelID, roomIDParam).First(&roomType).Error
-		}
-		// C. Match by direct RoomType ID
-		if roomType.ID == 0 {
-			if rID, err := strconv.ParseUint(roomIDParam, 10, 32); err == nil && rID > 0 {
-				_ = config.DB.Where("id = ? AND hotel_id = ? AND deleted_at IS NULL", uint(rID), hotelID).First(&roomType).Error
-			}
-		}
-		// C. Auto-create RoomType if not found (so OTA bookings don't fail)
-		if roomType.ID == 0 {
-			roomTypeName := stay.RatePlanDescription
-			if roomTypeName == "" {
-				roomTypeName = "Unmapped Type (" + roomIDParam + ")"
-			}
-
-			roomType = models.RoomType{
-				HotelID:         hotelID,
-				Name:            roomTypeName,
-				ChannelRoomCode: roomIDParam,
-				BasePrice:       stay.TOTAmountBeforeTax,
-				MaxOccupancy:    10, // Generous default for unassigned
-			}
-			if err := config.DB.Create(&roomType).Error; err != nil {
-				// Fallback to any room type if creation fails
-				_ = config.DB.Where("hotel_id = ? AND deleted_at IS NULL", hotelID).First(&roomType).Error
-			}
-		}
-
-		if roomType.ID == 0 {
-			return &BookingHotelPushBookingResponse{Status: "Fail", ConfirmationNo: ""}, fmt.Errorf("no room type available or mapped for hotel %d", hotelID)
+		roomType, err := resolveBookingHotelRoomType(hotelID, partnerID, stay)
+		if err != nil {
+			return &BookingHotelPushBookingResponse{Status: "Fail", ConfirmationNo: ""}, err
 		}
 
 		// 3. Resolve RatePlan
@@ -431,14 +455,24 @@ func handleBookingHotelCreate(hotelID uint, partnerID uint, req BookingHotelPush
 			ratePlanName = stay.MealPlanCode
 		}
 		var rateMapping models.ChannelRateMapping
-		if ratePlanName != "" {
-			config.DB.Where("hotel_id = ? AND partner_integration_id = ? AND ota_rate_plan_code = ?", hotelID, partnerID, stay.RatePlanCode).First(&rateMapping)
+		rateCode := strings.TrimSpace(stay.RatePlanCode)
+		if rateCode == "" {
+			rateCode = strings.TrimSpace(stay.MealPlanCode)
+		}
+		if rateCode == "" {
+			rateCode = strings.TrimSpace(stay.RatePlanCategory)
+		}
+		if rateCode != "" {
+			config.DB.Where("hotel_id = ? AND partner_integration_id = ? AND ota_rate_plan_code = ?", hotelID, partnerID, rateCode).First(&rateMapping)
 			if rateMapping.PlanID > 0 {
 				var rp models.RatePlan
 				config.DB.Where("id = ?", rateMapping.PlanID).First(&rp)
 				if rp.ID > 0 {
 					ratePlanName = rp.Name + " (" + rp.MealPlan + ")"
 				}
+			}
+			if rateMapping.ID == 0 && ratePlanName == "" {
+				ratePlanName = rateCode
 			}
 		}
 
