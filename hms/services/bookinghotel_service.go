@@ -299,7 +299,7 @@ func handleBookingHotelCreate(hotelID uint, partnerID uint, req BookingHotelPush
 		return &BookingHotelPushBookingResponse{Status: "Fail", ConfirmationNo: ""}, fmt.Errorf("no ReservationStays provided in booking payload")
 	}
 
-	var confirmationNumbers []string
+	var confirmationNumbers []uint
 
 	for stayIdx, stay := range req.ReservationStays {
 		checkIn, err := time.Parse("2006-01-02", strings.TrimSpace(stay.ArrivalDate))
@@ -590,10 +590,10 @@ func handleBookingHotelCreate(hotelID uint, partnerID uint, req BookingHotelPush
 			return &BookingHotelPushBookingResponse{Status: "Fail", ConfirmationNo: ""}, fmt.Errorf("failed to save booking: %w", saveErr)
 		}
 
-		confirmationNumbers = append(confirmationNumbers, newBooking.BookingCode)
+		confirmationNumbers = append(confirmationNumbers, newBooking.ID)
 	}
 
-	mainConfirmation := ""
+	var mainConfirmation interface{} = ""
 	if len(confirmationNumbers) > 0 {
 		mainConfirmation = confirmationNumbers[0]
 	}
@@ -640,7 +640,7 @@ func handleBookingHotelCancel(hotelID uint, req BookingHotelPushBookingRequest) 
 		}).Error
 		return &BookingHotelPushBookingResponse{
 			Status:         "Success",
-			ConfirmationNo: booking.BookingCode,
+			ConfirmationNo: booking.ID,
 		}, nil
 	}
 
@@ -679,7 +679,7 @@ func handleBookingHotelModify(hotelID uint, partnerID uint, req BookingHotelPush
 		_ = config.DB.Model(&booking).Updates(updates).Error
 		return &BookingHotelPushBookingResponse{
 			Status:         "Success",
-			ConfirmationNo: booking.BookingCode,
+			ConfirmationNo: booking.ID,
 		}, nil
 	}
 
