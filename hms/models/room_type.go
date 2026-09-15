@@ -8,9 +8,9 @@ import (
 
 type RoomType struct {
 	ID                               uint           `gorm:"primaryKey" json:"id"`
-	HotelID                          uint           `gorm:"not null;index" json:"hotel_id"`
+	HotelID                          uint           `gorm:"not null;index:idx_hotel_name,unique" json:"hotel_id"`
 	Hotel                            Hotel          `gorm:"foreignKey:HotelID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"hotel,omitempty"`
-	Name                             string         `gorm:"not null" json:"name"`
+	Name                             string         `gorm:"not null;index:idx_hotel_name,unique" json:"name"`
 	ChannelRoomCode                  string         `gorm:"size:50;index" json:"channel_room_code"` // e.g. "4841" for BookingHotel
 	BasePrice                        float64        `json:"base_price"`
 	IncludedGuestsOverride           *int           `json:"included_guests_override"`

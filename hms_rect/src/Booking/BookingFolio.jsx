@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { getWithAuth, patchWithAuth, postWithAuth } from '../api'
+import { domain } from '../Functions/domain'
 import { resolveAssetUrl } from '../Functions/assetUrl'
 import { getGuestSession, guestAuthHeader } from '../Public/guestSession'
 import toast from 'react-hot-toast'
@@ -12,14 +13,14 @@ const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || ''
 // Gateway icon + label helpers used in multiple places
 function gatewayIcon(method) {
   switch ((method || '').toLowerCase()) {
-    case 'razorpay':    return { icon: 'fa-solid fa-bolt',                 color: '#2563eb', label: 'Razorpay' }
-    case 'phonepe':     return { icon: 'fa-solid fa-mobile-screen-button', color: '#7c3aed', label: 'PhonePe' }
-    case 'upi':         return { icon: 'fa-solid fa-mobile-screen-button', color: '#16a34a', label: 'UPI' }
-    case 'card':        return { icon: 'fa-solid fa-credit-card',          color: '#0284c7', label: 'Card (POS)' }
-    case 'bank_transfer': return { icon: 'fa-solid fa-building-columns',  color: '#0891b2', label: 'Bank Transfer' }
-    case 'cheque':      return { icon: 'fa-solid fa-money-check',          color: '#d97706', label: 'Cheque' }
+    case 'razorpay': return { icon: 'fa-solid fa-bolt', color: '#2563eb', label: 'Razorpay' }
+    case 'phonepe': return { icon: 'fa-solid fa-mobile-screen-button', color: '#7c3aed', label: 'PhonePe' }
+    case 'upi': return { icon: 'fa-solid fa-mobile-screen-button', color: '#16a34a', label: 'UPI' }
+    case 'card': return { icon: 'fa-solid fa-credit-card', color: '#0284c7', label: 'Card (POS)' }
+    case 'bank_transfer': return { icon: 'fa-solid fa-building-columns', color: '#0891b2', label: 'Bank Transfer' }
+    case 'cheque': return { icon: 'fa-solid fa-money-check', color: '#d97706', label: 'Cheque' }
     case 'cash':
-    default:            return { icon: 'fa-solid fa-money-bills',          color: '#16a34a', label: 'Cash' }
+    default: return { icon: 'fa-solid fa-money-bills', color: '#16a34a', label: 'Cash' }
   }
 }
 
@@ -194,7 +195,8 @@ export default function BookingFolio() {
         // Guest voucher flow: booking details are only available to the signed-in owner.
         const guestSession = getGuestSession()
         if (!guestSession.token) {
-          navigate(`/guest/login?redirect=${encodeURIComponent(`/guest/bookings/${id}`)}`)
+          // /guest/login is disabled — redirect to booking portal (login modal handles auth)
+          navigate('/book', { replace: true })
           return
         }
         const { default: api } = await import('../api')
@@ -564,7 +566,7 @@ export default function BookingFolio() {
         toast.success('Tax Invoice opened')
       } else {
         const code = booking?.booking_code || id
-        window.open(`http://localhost:8080/api/public/bookings/${encodeURIComponent(code)}/invoice/pdf`, '_blank')
+        window.open(`${domain}api/public/bookings/${encodeURIComponent(code)}/invoice/pdf`, '_blank')
         toast.success('Opening Invoice PDF')
       }
     } catch (e) {
@@ -671,7 +673,7 @@ export default function BookingFolio() {
   }
 
   const activeGateway = (hotelInfo?.payment_gateway || 'razorpay').toLowerCase()
-  const gatewayLabel  = activeGateway === 'phonepe' ? 'PhonePe' : 'Razorpay'
+  const gatewayLabel = activeGateway === 'phonepe' ? 'PhonePe' : 'Razorpay'
   const gatewayConfigured = activeGateway === 'phonepe'
     ? (hotelInfo?.phonepe_configured || !!hotelInfo?.phonepe_merchant_id)
     : (hotelInfo?.razorpay_configured || !!(hotelInfo?.razorpay_key_id || RAZORPAY_KEY_ID))
@@ -716,6 +718,11 @@ export default function BookingFolio() {
             {token && (
               <button type="button" className="ota-btn outline" onClick={() => navigate('/booking/all')}>
                 <i className="fa-solid fa-arrow-left"></i> Bookings
+              </button>
+            )}
+            {!token && getGuestSession()?.token && (
+              <button type="button" className="ota-btn outline" onClick={() => navigate('/guest')}>
+                <i className="fa-solid fa-arrow-left"></i> My Bookings
               </button>
             )}
           </div>
@@ -792,7 +799,7 @@ export default function BookingFolio() {
                 </span>
               </div>
               <div className="ota-card-body">
-                
+
                 {/* Primary / Lead Guest */}
                 <div className="ota-lead-guest-box">
                   <div className="ota-lead-guest-badge">
@@ -845,7 +852,7 @@ export default function BookingFolio() {
                             <span className="ota-guest-num-badge">Guest #{c.serial}</span>
                             {c.relation && <span className="ota-relation-pill">{c.relation}</span>}
                           </div>
-                          
+
                           <div className="ota-companion-name">{c.name || `Guest #${c.serial}`}</div>
 
                           <div className="ota-companion-fields">
@@ -1077,24 +1084,24 @@ export default function BookingFolio() {
                         {payments.map((p) => {
                           const gw = gatewayIcon(p.method)
                           return (
-                          <tr key={p.id}>
-                            <td>
-                              <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontWeight:600 }}>
-                                <i className={gw.icon} style={{ color: gw.color, fontSize: 13 }} />
-                                {gw.label}
-                              </span>
-                            </td>
-                            <td>{p.reference || '-'}</td>
-                            <td>{formatDateHuman(p.paid_on || p.created_at)}</td>
-                            <td className="text-right font-semibold" style={{ color: '#059669' }}>{formatINR(p.amount)}</td>
-                            {token && (
-                              <td className="text-right">
-                                <button type="button" className="ota-del-btn" onClick={() => deletePayment(p.id)} title="Delete">
-                                  <i className="fa-solid fa-trash"></i>
-                                </button>
+                            <tr key={p.id}>
+                              <td>
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
+                                  <i className={gw.icon} style={{ color: gw.color, fontSize: 13 }} />
+                                  {gw.label}
+                                </span>
                               </td>
-                            )}
-                          </tr>
+                              <td>{p.reference || '-'}</td>
+                              <td>{formatDateHuman(p.paid_on || p.created_at)}</td>
+                              <td className="text-right font-semibold" style={{ color: '#059669' }}>{formatINR(p.amount)}</td>
+                              {token && (
+                                <td className="text-right">
+                                  <button type="button" className="ota-del-btn" onClick={() => deletePayment(p.id)} title="Delete">
+                                    <i className="fa-solid fa-trash"></i>
+                                  </button>
+                                </td>
+                              )}
+                            </tr>
                           )
                         })}                      </tbody>
                     </table>
@@ -1207,7 +1214,7 @@ export default function BookingFolio() {
                       <option value="card">💳 Card (POS)</option>
                       <option value="bank_transfer">🏦 Bank Transfer / NEFT</option>
                       {activeGateway === 'razorpay' && <option value="razorpay">⚡ Razorpay (Online)</option>}
-                      {activeGateway === 'phonepe'  && <option value="phonepe">📲 PhonePe (Online)</option>}
+                      {activeGateway === 'phonepe' && <option value="phonepe">📲 PhonePe (Online)</option>}
                       <option value="cheque">📝 Cheque</option>
                       <option value="other">🔖 Other</option>
                     </select>

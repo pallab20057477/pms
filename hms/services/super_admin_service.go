@@ -1,6 +1,9 @@
 package services
 
+
 import (
+	"context"
+
 	"errors"
 	"fmt"
 	"hms/config"
@@ -219,7 +222,11 @@ func SuspendHotel(hotelID uint, superAdminID uint, reason string) error {
 		Action:  "suspended",
 		Reason:  reason,
 	}
-	return config.DB.Create(&log).Error
+	if err := config.DB.Create(&log).Error; err != nil {
+		return err
+	}
+	config.CacheDeletePattern(context.Background(), "hotels:list:*")
+	return nil
 }
 
 // ActivateHotel activates a suspended hotel
@@ -239,7 +246,11 @@ func ActivateHotel(hotelID uint, superAdminID uint, reason string) error {
 		Action:  "activated",
 		Reason:  reason,
 	}
-	return config.DB.Create(&log).Error
+	if err := config.DB.Create(&log).Error; err != nil {
+		return err
+	}
+	config.CacheDeletePattern(context.Background(), "hotels:list:*")
+	return nil
 }
 
 // SuspendAdmin suspends an admin account

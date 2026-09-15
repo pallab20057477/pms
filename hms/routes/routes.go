@@ -109,6 +109,7 @@ func RegisterRoutes(r *gin.Engine) {
 	// Room
 	api.POST("/rooms", controllers.AddRoom)
 	api.GET("/rooms", controllers.ListRooms)
+	api.GET("/room-types", controllers.ListRoomTypes)
 	api.GET("/rooms/maintenance", controllers.ListMaintenanceRooms)
 	api.GET("/rooms/status/:status", controllers.ListRoomsByStatus)
 	api.GET("/rooms/:id", controllers.GetRoom)

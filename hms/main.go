@@ -6,6 +6,7 @@ import (
 	"hms/routes"
 	"hms/workers"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
@@ -26,11 +27,11 @@ func main() {
 
 	config.ConnectDB()
 	config.ConnectRedis()
-	
+
 	// Initialize and start background workers
 	workers.InitAsynqClient()
 	go workers.StartWorkerServer()
-	
+
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 	// restrict trusted proxies to local addresses to avoid Gin warning
@@ -61,6 +62,9 @@ func main() {
 			return
 		}
 		c.Next()
+	})
+	r.GET("/healthz", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 	// serve uploaded files from UPLOAD_BASE_PATH (defaults to ./uploads)
 	uploadBasePath := strings.TrimRight(strings.TrimSpace(os.Getenv("UPLOAD_BASE_PATH")), "/\\")

@@ -56,8 +56,6 @@ func AssignAmenitiesToRoom(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil && err != http.ErrBodyNotAllowed {
 		// If there's a binding error, continue to try reading via params below
-		// but return on other serious errors
-		// (we'll still allow an empty body when using default behavior)
 	}
 	// room id may be provided in URL param
 	var roomID uint
@@ -80,23 +78,31 @@ func AssignAmenitiesToRoom(c *gin.Context) {
 		return
 	}
 
-	// remove existing mappings for room
-	config.DB.Where("room_id = ?", roomID).Delete(&models.RoomAmenityMap{})
-
-	// If amenity IDs supplied, attach them
-	if len(req.AmenityIDs) > 0 {
-		for _, aid := range req.AmenityIDs {
-			m := models.RoomAmenityMap{RoomID: roomID, AmenityID: aid}
-			config.DB.Create(&m)
+	
+	// Auto-migrate old rooms that have no RoomType assigned
+	if room.RoomTypeID == 0 {
+		rtName := "Custom - Room " + room.RoomNumber
+		rt := models.RoomType{
+			HotelID:      hotelID,
+			Name:         rtName,
+			MaxOccupancy: 2,
 		}
-		utils.LogActivity(hotelID, "Amenity", c.GetUint("admin_id"), "Amenities assigned to room "+room.RoomNumber)
-		c.JSON(http.StatusOK, gin.H{"message": "Assigned"})
-		return
+		if err := config.DB.Create(&rt).Error; err == nil {
+			room.RoomTypeID = rt.ID
+			config.DB.Save(room)
+		}
 	}
 
-	// If amenity names supplied, find or create amenities and attach
-	if len(req.AmenityNames) > 0 {
-		var ids []uint
+	var newAmenities []models.RoomAmenity
+
+
+	// If amenity IDs supplied
+	if len(req.AmenityIDs) > 0 {
+		for _, aid := range req.AmenityIDs {
+			newAmenities = append(newAmenities, models.RoomAmenity{ID: aid})
+		}
+	} else if len(req.AmenityNames) > 0 {
+		// If amenity names supplied, find or create amenities
 		for _, name := range req.AmenityNames {
 			n := strings.TrimSpace(name)
 			if n == "" {
@@ -110,20 +116,23 @@ func AssignAmenitiesToRoom(c *gin.Context) {
 					continue
 				}
 			}
-			ids = append(ids, a.ID)
+			newAmenities = append(newAmenities, models.RoomAmenity{ID: a.ID})
 		}
-		for _, aid := range ids {
-			m := models.RoomAmenityMap{RoomID: roomID, AmenityID: aid}
-			config.DB.Create(&m)
-		}
-		utils.LogActivity(hotelID, "Amenity", c.GetUint("admin_id"), "Amenities assigned to room "+room.RoomNumber)
-		c.JSON(http.StatusOK, gin.H{"message": "Assigned"})
+	}
+
+	// Update RoomType's Amenities
+	if err := config.DB.Model(&models.RoomType{ID: room.RoomTypeID}).Association("Amenities").Replace(newAmenities); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update amenities"})
 		return
 	}
 
-	// an empty selection is a valid "clear amenities" request
-	utils.LogActivity(hotelID, "Amenity", c.GetUint("admin_id"), "Amenities cleared from room "+room.RoomNumber)
-	c.JSON(http.StatusOK, gin.H{"message": "Cleared"})
+	// Invalidate room cache (delete both the list and the specific room's detail cache)
+	roomListCacheKey := "room_list:" + strconv.FormatUint(uint64(hotelID), 10)
+	roomDetailCacheKey := "room:" + strconv.FormatUint(uint64(hotelID), 10) + ":" + strconv.FormatUint(uint64(room.ID), 10)
+	config.CacheDelete(c.Request.Context(), roomListCacheKey, roomDetailCacheKey)
+
+	utils.LogActivity(hotelID, "Amenity", c.GetUint("admin_id"), "Amenities updated for room "+room.RoomNumber)
+	c.JSON(http.StatusOK, gin.H{"message": "Assigned"})
 }
 
 func GetRoomAmenities(c *gin.Context) {

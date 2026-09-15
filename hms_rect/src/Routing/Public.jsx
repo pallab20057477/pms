@@ -9,7 +9,8 @@ import { login } from '../Redux/authSlice';
 
 const BookingPortal = lazy(() => import('../BookingPortal/BookingPortal'))
 const BookingFolio = lazy(() => import('../Booking/BookingFolio'))
-const GuestAccess = lazy(() => import('../Public/GuestAccess'))
+// GuestAccess (/guest/login) is disabled — login is handled via the modal on the booking portal
+// const GuestAccess = lazy(() => import('../Public/GuestAccess'))
 const GuestPortal = lazy(() => import('../Public/GuestPortal'))
 
 function Public() {
@@ -55,7 +56,8 @@ function Public() {
       <Routes>
         <Route path='/' element={redirect ? <Navigate to={redirect} replace /> : <Login />} />
         <Route path='/forgot_password' element={redirect ? <Navigate to={redirect} replace /> : <Forgotpassword />} />
-        <Route path='/guest/login' element={<GuestAccess />} />
+        {/* /guest/login is disabled — guests log in via the modal popup on the booking portal */}
+        <Route path='/guest/login' element={<Navigate to="/book" replace />} />
         <Route path='/guest' element={<GuestPortal />} />
         <Route path='/book' element={<BookingPortal />} />
         <Route path='/book/:hotelCode' element={<BookingPortal />} />

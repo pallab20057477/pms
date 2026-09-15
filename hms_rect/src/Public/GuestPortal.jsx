@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../api'
-import Logo from '../assets/dist/img/logo.png'
 import { clearGuestSession, getGuestSession, guestAuthHeader, setGuestSession } from './guestSession'
 import './GuestPortal.css'
 
 const statusLabel = {
-  reserved: 'Upcoming',
-  checked_in: 'In house',
+  reserved: 'Confirmed',
+  checked_in: 'In House',
   checkedout: 'Completed',
   completed: 'Completed',
   cancelled: 'Cancelled',
@@ -39,7 +38,8 @@ export default function GuestPortal() {
 
   useEffect(() => {
     if (!token) {
-      navigate('/guest/login?redirect=/guest', { replace: true })
+      // /guest/login is disabled — redirect to booking portal which has the login modal
+      navigate('/book', { replace: true })
       return
     }
 
@@ -60,7 +60,8 @@ export default function GuestPortal() {
         setBookings(Array.isArray(bookingsRes.data?.bookings) ? bookingsRes.data.bookings : [])
       } catch {
         clearGuestSession()
-        navigate('/guest/login?redirect=/guest', { replace: true })
+        // /guest/login is disabled — redirect to booking portal
+        navigate('/book', { replace: true })
       } finally {
         if (alive) setLoading(false)
       }
@@ -68,22 +69,6 @@ export default function GuestPortal() {
     load()
     return () => { alive = false }
   }, [token, navigate])
-
-  const stats = useMemo(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    let upcoming = 0
-    let completed = 0
-    let cancelled = 0
-    bookings.forEach((booking) => {
-      const status = String(booking.status || '').toLowerCase()
-      const checkIn = new Date(`${booking.check_in_date}T00:00:00`)
-      if (status === 'cancelled') cancelled += 1
-      else if (status === 'completed' || status === 'checkedout' || checkIn < today) completed += 1
-      else upcoming += 1
-    })
-    return { upcoming, completed, cancelled }
-  }, [bookings])
 
   const saveProfile = async (e) => {
     e.preventDefault()
@@ -96,7 +81,7 @@ export default function GuestPortal() {
       })
       setGuestSession({ token, user: res.data })
       setSessionState({ token, user: res.data })
-      setMessage('Profile updated. Future bookings will use these details.')
+      setMessage('Profile updated successfully.')
     } catch (err) {
       setMessage(err?.response?.data?.error || 'Unable to update profile.')
     } finally {
@@ -112,78 +97,92 @@ export default function GuestPortal() {
   if (loading) {
     return (
       <div className="guest-page">
-        <div className="guest-loading"><i className="fa-solid fa-circle-notch fa-spin" /> Loading your bookings</div>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ color: '#666', fontSize: '14px' }}>Loading your trips...</p>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="guest-page">
+      {/* HEADER */}
       <header className="guest-topbar">
         <Link to="/book" className="guest-brand">
-          <img src={Logo} alt="StaySync" />
-          <span>StaySync Guest</span>
+          StaySync
         </Link>
         <nav className="guest-nav">
-          <Link to="/book">Browse hotels</Link>
-          <button type="button" onClick={logout}>Sign out</button>
+          <Link to="/book">Search Hotels</Link>
+          <span style={{ color: '#ccc' }}>|</span>
+          <button type="button" onClick={logout}>Log Out</button>
         </nav>
       </header>
 
+      {/* DASHBOARD LAYOUT */}
       <main className="guest-dashboard">
-        <section className="guest-welcome">
-          <div>
-            <div className="guest-kicker">Guest account</div>
-            <h1>{user?.name || 'Welcome'}</h1>
-            <p>{user?.email}</p>
+
+        {/* OVERVIEW HEADER */}
+        <section className="guest-overview-panel">
+          <div className="guest-overview-info">
+            <h1>Hi, {user?.name?.split(' ')[0] || 'Guest'}</h1>
+            <p>Manage your hotel reservations and account details securely.</p>
           </div>
-          <Link to="/book" className="guest-primary-link">
-            <i className="fa-solid fa-magnifying-glass" /> Find a stay
-          </Link>
+          <div className="guest-security-badge">
+            ✓ Verified Account
+          </div>
         </section>
 
-        <section className="guest-stat-grid">
-          <div className="guest-stat"><span>Upcoming</span><strong>{stats.upcoming}</strong></div>
-          <div className="guest-stat"><span>Completed</span><strong>{stats.completed}</strong></div>
-          <div className="guest-stat"><span>Cancelled</span><strong>{stats.cancelled}</strong></div>
-        </section>
-
+        {/* TWO COLUMNS: TRIPS & PROFILE */}
         <section className="guest-layout">
-          <div className="guest-panel">
-            <div className="guest-panel-head">
-              <h2>My Bookings</h2>
-              <span>{bookings.length} total</span>
+
+          {/* TRIPS COLUMN */}
+          <div className="guest-card">
+            <div className="guest-card-header">
+              <h2>My Trips</h2>
+              <span>{bookings.length} Bookings</span>
             </div>
+
             {bookings.length === 0 ? (
               <div className="guest-empty">
-                <i className="fa-regular fa-calendar-check" />
-                <h3>No bookings yet</h3>
-                <p>Your direct hotel bookings will appear here after confirmation.</p>
-                <Link to="/book">Browse available hotels</Link>
+                <h3>No Trips Found</h3>
+                <p>Looks like you haven't made any bookings yet.</p>
+                <Link to="/book" className="gb-btn-primary" style={{ display: 'inline-block' }}>Start Booking</Link>
               </div>
             ) : (
               <div className="guest-booking-list">
                 {bookings.map((booking) => {
-                  const status = String(booking.status || '').toLowerCase()
+                  const rawStatus = String(booking.status || '').toLowerCase()
+                  let statusClass = 'upcoming'
+                  if (rawStatus === 'completed' || rawStatus === 'checkedout') statusClass = 'completed'
+                  if (rawStatus === 'cancelled') statusClass = 'cancelled'
+
                   return (
-                    <article className="guest-booking" key={booking.id || booking.booking_code}>
-                      <div>
-                        <div className="guest-booking-code">{booking.booking_code}</div>
-                        <h3>{booking.hotel_name}</h3>
-                        <p>{booking.room_type || 'Room'} {booking.room_number ? `· Room ${booking.room_number}` : ''}</p>
+                    <article className="guest-booking-row" key={booking.id || booking.booking_code}>
+                      <div className="gb-hotel-info">
+                        <span className="gb-code">Booking ID: {booking.booking_code}</span>
+                        <h3 className="gb-name">{booking.hotel_name}</h3>
+                        <span className="gb-room">{booking.room_type || 'Standard Room'}</span>
                       </div>
-                      <div className="guest-booking-dates">
-                        <span>{formatDate(booking.check_in_date)}</span>
-                        <i className="fa-solid fa-arrow-right" />
-                        <span>{formatDate(booking.check_out_date)}</span>
+
+                      <div className="gb-dates">
+                        <span><strong>Check In:</strong> {formatDate(booking.check_in_date)}</span>
+                        <span><strong>Check Out:</strong> {formatDate(booking.check_out_date)}</span>
                       </div>
-                      <div className="guest-booking-meta">
-                        <strong>{money(booking.total_amount)}</strong>
-                        <span className={`guest-status ${status}`}>{statusLabel[status] || booking.status || 'Booked'}</span>
+
+                      <div className="gb-meta">
+                        <span className="gb-price">{money(booking.total_amount)}</span>
+                        <span className={`gb-status ${statusClass}`}>
+                          {statusLabel[rawStatus] || booking.status || 'Confirmed'}
+                        </span>
                       </div>
-                      <div className="guest-booking-actions">
-                        <Link to={`/guest/bookings/${booking.booking_code}`}>View details</Link>
-                        <Link to={`/book/${booking.hotel_id}`}>Book again</Link>
+
+                      <div className="gb-actions">
+                        <Link to={`/guest/bookings/${booking.booking_code}`} className="gb-btn-primary">
+                          Manage Trip
+                        </Link>
+                        <Link to={`/book/${booking.hotel_id}`} className="gb-btn-secondary">
+                          Book Again
+                        </Link>
                       </div>
                     </article>
                   )
@@ -192,33 +191,35 @@ export default function GuestPortal() {
             )}
           </div>
 
-          <aside className="guest-panel guest-profile-panel">
-            <div className="guest-panel-head">
-              <h2>Saved Details</h2>
+          {/* PROFILE COLUMN */}
+          <aside className="guest-card">
+            <div className="guest-card-header">
+              <h2>Profile Details</h2>
             </div>
             <form className="guest-profile-form" onSubmit={saveProfile}>
-              <label>
-                Name
-                <input value={profile.name} onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))} />
-              </label>
-              <label>
-                Email
+              <div className="guest-form-group">
+                <label>Full Name</label>
+                <input required value={profile.name} onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))} />
+              </div>
+
+              <div className="guest-form-group">
+                <label>Email Address</label>
                 <input value={user?.email || ''} disabled />
-              </label>
-              <label>
-                Mobile number
-                <input value={profile.phone} onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))} placeholder="+91 98765 43210" />
-              </label>
-              <button className="guest-secondary-btn" disabled={saving}>
-                {saving ? 'Saving...' : 'Save details'}
+              </div>
+
+              <div className="guest-form-group">
+                <label>Mobile Number</label>
+                <input required value={profile.phone} onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))} placeholder="+91 98765 43210" />
+              </div>
+
+              <button type="submit" className="guest-btn-submit" disabled={saving}>
+                {saving ? 'Saving...' : 'Update Profile'}
               </button>
-              {message && <p className="guest-form-message">{message}</p>}
+
+              {message && <div className="guest-form-message">{message}</div>}
             </form>
-            <div className="guest-assurance">
-              <i className="fa-solid fa-shield-halved" />
-              <p>Your details are used only to match your own bookings and speed up direct hotel reservations.</p>
-            </div>
           </aside>
+
         </section>
       </main>
     </div>

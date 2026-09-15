@@ -211,7 +211,7 @@ func upsertRoomType(hotelID uint, req *SaveRoomRequest) uint {
 		return req.RoomTypeID
 	}
 	if req.RoomTypeName == "" {
-		return 0
+		req.RoomTypeName = "Custom - Room " + req.RoomNumber
 	}
 	var rt models.RoomType
 	if req.MaxOccupancy == 0 {
@@ -229,44 +229,68 @@ func upsertRoomType(hotelID uint, req *SaveRoomRequest) uint {
 			ViewType:     req.ViewType,
 		}
 		config.DB.Create(&rt)
-	} else {
-		rt.BasePrice = req.BasePrice
-		rt.MaxOccupancy = req.MaxOccupancy
-		rt.RoomSize = req.RoomSize
-		rt.Description = req.Description
-		rt.BedType = req.BedType
-		rt.ViewType = req.ViewType
-		config.DB.Save(&rt)
 	}
 	return rt.ID
 }
 
 func handleRoomImagesUpload(c *gin.Context, roomTypeID uint) {
+	primaryExistingIDStr := c.PostForm("primary_existing_id")
+	primaryNewIndexStr := c.PostForm("primary_new_index")
+	orderStr := c.PostForm("existing_image_order")
+
+	// Handle ordering existing images
+	if orderStr != "" {
+		ids := strings.Split(orderStr, ",")
+		for i, idStr := range ids {
+			if id, err := strconv.Atoi(idStr); err == nil {
+				config.DB.Model(&models.RoomImage{}).Where("id = ?", id).Update("order", i)
+			}
+		}
+	}
+
+	// Handle setting existing primary
+	if primaryExistingIDStr != "" {
+		config.DB.Model(&models.RoomImage{}).Where("room_type_id = ?", roomTypeID).Update("is_primary", false)
+		if id, err := strconv.Atoi(primaryExistingIDStr); err == nil {
+			config.DB.Model(&models.RoomImage{}).Where("id = ?", id).Update("is_primary", true)
+		}
+	}
+
+	primaryNewIndex := -1
+	if primaryNewIndexStr != "" {
+		primaryNewIndex, _ = strconv.Atoi(primaryNewIndexStr)
+	}
+
 	if form, err := c.MultipartForm(); err == nil && form != nil {
 		files := form.File["images[]"]
 		if len(files) == 0 {
 			files = form.File["images"]
 		}
 		if len(files) > 0 {
-			for _, file := range files {
+			if primaryNewIndex != -1 {
+				config.DB.Model(&models.RoomImage{}).Where("room_type_id = ?", roomTypeID).Update("is_primary", false)
+			}
+			for i, file := range files {
 				if url := uploadRoomFile(c, file); url != "" {
+					isPrimary := (primaryNewIndex == i)
 					img := models.RoomImage{
 						RoomTypeID: roomTypeID,
 						URL:        url,
 						Order:      999,
+						IsPrimary:  isPrimary,
 					}
 					config.DB.Create(&img)
 				}
 			}
-			var firstImg models.RoomImage
-			if err := config.DB.Where("room_type_id = ?", roomTypeID).Order("is_primary desc, \"order\" asc, id asc").First(&firstImg).Error; err == nil {
-				config.DB.Model(&models.RoomType{}).Where("id = ?", roomTypeID).Update("image", firstImg.URL)
-			}
 		}
+	}
+
+	var firstImg models.RoomImage
+	if err := config.DB.Where("room_type_id = ?", roomTypeID).Order("is_primary desc, \"order\" asc, id asc").First(&firstImg).Error; err == nil {
+		config.DB.Model(&models.RoomType{}).Where("id = ?", roomTypeID).Update("image", firstImg.URL)
 	}
 }
 
-// AddRoom supports JSON or multipart/form-data
 func AddRoom(c *gin.Context) {
 	hotelID := c.GetUint("active_hotel_id")
 	
@@ -490,7 +514,9 @@ func UpdateRoom(c *gin.Context) {
 	_ = loadRoomWithRelationsForHotel(&r, hotelID)
 	normalizeRoomAssetURLs(&r)
 	utils.LogActivity(hotelID, "Room", c.GetUint("admin_id"), fmt.Sprintf("Room %s updated", r.RoomNumber))
-	config.CacheDelete(c.Request.Context(), roomDetailCacheKey(hotelID, idStr))
+	
+	// Ensure caches are invalidated so that image updates reflect immediately
+	invalidateRoomCache(hotelID, idStr)
 	utils.CacheDelPattern(fmt.Sprintf("availability:%d:*", hotelID))
 	
 	detail := roomDetailResponse{
@@ -635,3 +661,13 @@ func DeleteRoomImage(c *gin.Context) {
 }
 
 // Handles: Add room, Update room, Change status, List rooms, Delete room
+
+func ListRoomTypes(c *gin.Context) {
+	hotelID := c.GetUint("active_hotel_id")
+	var types []models.RoomType
+	if err := config.DB.Preload("Amenities").Preload("Images").Where("hotel_id = ?", hotelID).Find(&types).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load room types"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": types})
+}

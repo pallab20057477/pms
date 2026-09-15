@@ -9,7 +9,7 @@ import (
 
 type Room struct {
 	ID                uint           `gorm:"primaryKey" json:"id"`
-	HotelID           uint           `gorm:"not null;index:idx_hotel_status" json:"hotel_id"`
+	HotelID           uint           `gorm:"not null;index:idx_hotel_status;index:idx_hotel_room_number,unique" json:"hotel_id"`
 	Hotel             Hotel          `gorm:"foreignKey:HotelID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"hotel,omitempty"`
 	RoomTypeID        uint           `gorm:"not null;default:0;index" json:"room_type_id"`
 	RoomType          RoomType       `gorm:"foreignKey:RoomTypeID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;" json:"room_type_details,omitempty"`

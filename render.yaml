@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: hms
+    runtime: docker
+    plan: starter
+    dockerfilePath: hms/Dockerfile
+    dockerContext: hms
+    healthCheckPath: /healthz

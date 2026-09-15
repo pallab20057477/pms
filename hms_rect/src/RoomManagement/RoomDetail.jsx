@@ -18,10 +18,16 @@ function getAmenityNames(room) {
 
 function getRoomTypeName(room) {
   if (!room) return "-";
-  if (typeof room.room_type === "string") return room.room_type;
-  if (room.room_type && typeof room.room_type === "object") return room.room_type.name || "-";
-  if (room.room_type_details && typeof room.room_type_details === "object") return room.room_type_details.name || "-";
-  return "-";
+  if (typeof room.room_type === "string") {
+    return room.room_type.trim() === "" ? "No Type Assigned" : room.room_type;
+  }
+  if (room.room_type && typeof room.room_type === "object") {
+    return room.room_type.name || "No Type Assigned";
+  }
+  if (room.room_type_details && typeof room.room_type_details === "object") {
+    return room.room_type_details.name || "No Type Assigned";
+  }
+  return "No Type Assigned";
 }
 
 export default function RoomDetail() {

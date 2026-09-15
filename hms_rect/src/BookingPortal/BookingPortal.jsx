@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import API from '../api'
 import { resolveAssetUrl } from '../Functions/assetUrl'
 import { clearGuestSession, getGuestSession, guestAuthHeader } from '../Public/guestSession'
+import GuestLoginModal from '../Public/GuestLoginModal'
 import './BookingPortal.css'
 
 const TODAY = new Date().toISOString().slice(0, 10)
@@ -54,7 +55,7 @@ function FestivePanel({ side, theme }) {
 export default function BookingPortal() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { hotelCode } = useParams()
+  const { hotelCode, shareCode } = useParams()
 
   const [hotels, setHotels] = useState([])
   const [hotel, setHotel] = useState(null)
@@ -68,7 +69,10 @@ export default function BookingPortal() {
   const [ribbonOff, setRibbonOff] = useState(false)
   const [showTrust, setShowTrust] = useState(false)
   const [guestSession, setGuestSession] = useState(() => getGuestSession())
+  const [showLoginModal, setShowLoginModal] = useState(false)
   const [matchedGuest, setMatchedGuest] = useState(false)
+  const pendingBookingRef = useRef(false) // tracks if login was triggered by a booking attempt
+  const submitRef = useRef(null) // ref to current submit function to avoid stale closure in effects
 
   const [form, setForm] = useState({
     check_in: TODAY, check_out: TOMORROW, room_id: '',
@@ -191,9 +195,10 @@ export default function BookingPortal() {
   const setComp = (i, v) => setForm(p => { const c = [...p.companions]; c[i] = v; return { ...p, companions: c } })
 
   const submit = async e => {
-    e.preventDefault()
+    if (e && e.preventDefault) e.preventDefault()
     if (!guestSession.token) {
-      navigate(`/guest/login?redirect=${encodeURIComponent(location.pathname + location.search)}`)
+      pendingBookingRef.current = true
+      setShowLoginModal(true)
       return
     }
     if (!hotel?.id || !form.room_id) { setResult({ ok: false, msg: 'Please select a room first.' }); return }
@@ -264,6 +269,16 @@ export default function BookingPortal() {
     finally { setSubmitting(false) }
   }
 
+  // Keep submitRef always pointing at the latest submit function
+  submitRef.current = submit
+
+  // Auto-submit booking after login completes (when modal was opened by a booking attempt)
+  useEffect(() => {
+    if (!pendingBookingRef.current || !guestSession.token || !hotel?.id || !form.room_id) return
+    pendingBookingRef.current = false
+    submitRef.current(null)
+  }, [guestSession.token, hotel?.id, form.room_id])
+
   // Determine if festival panels should show
   const hasFestivePanels = theme && (
     theme.left_panel_image_url || theme.left_panel_title ||
@@ -284,6 +299,7 @@ export default function BookingPortal() {
       <div className="bp-full-center">
         <div className="bp-loader"><div className="bp-spin" /><h2>Finding your perfect stay…</h2><p>Searching for the best available rooms.</p></div>
       </div>
+      {showLoginModal && <GuestLoginModal onClose={() => setShowLoginModal(false)} />}
     </div>
   )
 
@@ -300,6 +316,7 @@ export default function BookingPortal() {
           </button>
         </div>
       </div>
+      {showLoginModal && <GuestLoginModal onClose={() => setShowLoginModal(false)} />}
     </div>
   )
 
@@ -369,7 +386,7 @@ export default function BookingPortal() {
                   </button>
                 </>
               ) : (
-                <button className="bp-hdr-badge bp-hdr-badge-btn" onClick={() => navigate(`/guest/login?redirect=${encodeURIComponent(location.pathname + location.search)}`)}>
+                <button className="bp-hdr-badge bp-hdr-badge-btn" onClick={() => setShowLoginModal(true)}>
                   <i className="fa-solid fa-right-to-bracket" />Sign in
                 </button>
               )}
@@ -393,13 +410,11 @@ export default function BookingPortal() {
             {/* Hero */}
             <div className="bp-hero-wrap">
               <div className="bp-hero">
-                {hotel.cover_image && (
-                  <img
-                    src={resolveAssetUrl(hotel.cover_image)}
-                    alt={hotel.name}
-                    className="bp-hero-photo-img"
-                  />
-                )}
+                <img
+                  src={hotel.cover_image ? resolveAssetUrl(hotel.cover_image) : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=2000'}
+                  alt={hotel.name}
+                  className="bp-hero-photo-img"
+                />
                 <div className="bp-hero-shade" />
                 <div className="bp-hero-content">
                   <div className="bp-hero-name">{hotel.name}</div>
@@ -531,7 +546,7 @@ export default function BookingPortal() {
                     {!guestSession.token && (
                       <div className="bp-signin-card">
                         <div><strong>Sign in to continue</strong><p>Your booking history and details stay in one place. Google sign-in or email sign-in works without OTP.</p></div>
-                        <button type="button" onClick={() => navigate(`/guest/login?redirect=${encodeURIComponent(location.pathname + location.search)}`)}>Sign in</button>
+                        <button type="button" onClick={() => setShowLoginModal(true)}>Sign in</button>
                       </div>
                     )}
                     <div className="bp-form-body">
@@ -763,6 +778,19 @@ export default function BookingPortal() {
             </div>
           </div>
         )}
+
+        {showLoginModal && (
+          <GuestLoginModal
+            onClose={() => {
+              pendingBookingRef.current = false
+              setShowLoginModal(false)
+            }}
+            onSuccess={(payload) => {
+              setGuestSession(payload)
+              setShowLoginModal(false)
+            }}
+          />
+        )}
       </div>
     )
   }
@@ -770,6 +798,35 @@ export default function BookingPortal() {
   // ── BROWSE PAGE ──
   return (
     <div className="bp-page">
+      {/* ── BROWSE HEADER ── */}
+      <header className="bp-header">
+        <div className="bp-hdr-inner">
+          <div className="bp-hdr-left">
+            <div className="bp-hdr-icon"><i className="fa-solid fa-earth-americas" /></div>
+            <div>
+              <div className="bp-hdr-name">StaySync Hotels</div>
+              <div className="bp-hdr-loc">Find your perfect stay</div>
+            </div>
+          </div>
+          <div className="bp-hdr-right">
+            {guestSession.user ? (
+              <>
+                <button className="bp-hdr-badge bp-hdr-badge-btn" onClick={() => navigate('/guest')}>
+                  <i className="fa-solid fa-user" />{guestSession.user.name || 'My bookings'}
+                </button>
+                <button className="bp-hdr-badge bp-hdr-badge-btn" onClick={() => { clearGuestSession(); setGuestSession({ token: null, user: null }) }}>
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <button className="bp-hdr-badge bp-hdr-badge-btn" onClick={() => setShowLoginModal(true)}>
+                <i className="fa-solid fa-right-to-bracket" />Sign in
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
       <div className="bp-browse-hero">
         <div className="bp-browse-hero-inner">
           <h1>Find Your Perfect Stay</h1>
@@ -805,6 +862,19 @@ export default function BookingPortal() {
           </div>
         )}
       </div>
+
+      {showLoginModal && (
+        <GuestLoginModal
+          onClose={() => {
+            pendingBookingRef.current = false
+            setShowLoginModal(false)
+          }}
+          onSuccess={(payload) => {
+            setGuestSession(payload)
+            setShowLoginModal(false)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -98,7 +98,26 @@ export default function RoomForm() {
   const [loading, setLoading] = useState(Boolean(id));
   const [saving, setSaving] = useState(false);
   const [dragItem, setDragItem] = useState(null);
+  const [existingRoomTypes, setExistingRoomTypes] = useState([]);
   const [dropZoneActive, setDropZoneActive] = useState(false);
+
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadRoomTypes() {
+      try {
+        const response = await getWithAuth("/room-types", token);
+        const data = response.data?.data ? response.data.data : response.data;
+        if (mounted && Array.isArray(data)) {
+          setExistingRoomTypes(data);
+        }
+      } catch (error) {
+        console.error("Failed to load room types", error);
+      }
+    }
+    if (token) loadRoomTypes();
+    return () => { mounted = false; };
+  }, [token]);
 
   useEffect(() => {
     latestNewImagesRef.current = newImages;
@@ -440,6 +459,20 @@ export default function RoomForm() {
     }
   }
 
+
+  const handleAmenityChange = (amenityId) => {
+    setForm((prev) => {
+      const amenities = [...prev.amenities];
+      const index = amenities.indexOf(amenityId);
+      if (index >= 0) {
+        amenities.splice(index, 1);
+      } else {
+        amenities.push(amenityId);
+      }
+      return { ...prev, amenities };
+    });
+  };
+
   if (loading) {
     return <div className="content" style={{ padding: 24, textAlign: "center" }}>Loading room details...</div>;
   }
@@ -513,7 +546,38 @@ export default function RoomForm() {
                       <select
                         className={`form-control room-form-input ${form.room_type ? "is-valid" : ""}`}
                         value={form.room_type}
-                        onChange={(event) => setForm((current) => ({ ...current, room_type: event.target.value }))}
+                        
+                        onChange={(event) => {
+                          const selectedType = event.target.value;
+                          const existing = existingRoomTypes.find(rt => rt.name === selectedType);
+                          if (existing && !id) {
+                            setForm((current) => ({
+                              ...current,
+                              room_type: selectedType,
+                              base_price: existing.base_price || "",
+                              max_occupancy: existing.max_occupancy || 2,
+                              bed_type: existing.bed_type || "",
+                              room_size: existing.room_size || "",
+                              view_type: existing.view_type || "",
+                              description: existing.description || "",
+                              amenities: Array.isArray(existing.amenities) ? existing.amenities.map(a => String(a.id)) : []
+                            }));
+                            if (Array.isArray(existing.images) && existing.images.length > 0) {
+                              const sortedImages = sortRoomImages(existing.images);
+                              setExistingImages(sortedImages);
+                              setRemovedExistingIds([]);
+                              const initialPrimary = sortedImages.find((img) => img.is_primary || img.isPrimary);
+                              setPrimaryKey(initialPrimary ? `existing:${initialPrimary.id}` : `existing:${sortedImages[0].id}`);
+                            } else {
+                              setExistingImages([]);
+                              setRemovedExistingIds([]);
+                              setPrimaryKey(null);
+                            }
+                          } else {
+                            setForm((current) => ({ ...current, room_type: selectedType }));
+                          }
+                        }}
+
                         required
                       >
                         <option value="">Select room type</option>
@@ -790,28 +854,41 @@ export default function RoomForm() {
                   <i className="fa-solid fa-bell-concierge" /> Amenities
                 </h4>
                 <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-                  <div style={{ flex: 1 }}>
-                    <input
-                      type="text"
-                      className="form-control room-form-input"
-                      placeholder="Search amenities (WiFi, Balcony, AC...)"
-                      value={amenityQuery}
-                      onChange={(event) => setAmenityQuery(event.target.value)}
-                    />
-
-                  </div>
-                  <div className="room-amenities-grid">
-                    {filteredAmenityOptions.map((amenity) => (
-                      <label key={amenity.id} className="room-amenity-item" style={{display: "block", marginBottom: 5}}>
-                        <input
-                          type="checkbox"
-                          checked={form.amenities.includes(String(amenity.id))}
-                          onChange={() => handleAmenityChange(String(amenity.id))}
-                          style={{marginRight: 8}}
-                        />
-                        <span className="room-amenity-label">{amenity.name}</span>
-                      </label>
-                    ))}
+                  {/* Search input removed per user request */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px', maxHeight: '300px', overflowY: 'auto', padding: '4px' }}>
+                    {filteredAmenityOptions.map(amenity => {
+                      const isSelected = form.amenities.includes(String(amenity.id));
+                      return (
+                        <div 
+                          key={amenity.id}
+                          onClick={() => handleAmenityChange(String(amenity.id))}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            border: `1px solid ${isSelected ? '#3c8dbc' : '#d2d6de'}`,
+                            backgroundColor: isSelected ? '#3c8dbc' : '#fff',
+                            color: isSelected ? '#fff' : '#444',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            fontSize: '13px',
+                            fontWeight: isSelected ? '600' : '400',
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: isSelected ? '0 2px 4px rgba(60,141,188,0.2)' : 'none'
+                          }}
+                        >
+                          <i className={isSelected ? "fa-solid fa-check" : "fa-solid fa-plus"} style={{ fontSize: '11px' }} />
+                          {amenity.name}
+                        </div>
+                      );
+                    })}
+                    {filteredAmenityOptions.length === 0 && (
+                      <div style={{ padding: '12px', color: '#777', fontSize: '13px', fontStyle: 'italic' }}>
+                        No amenities match your search.
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
